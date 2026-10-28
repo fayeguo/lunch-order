@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e8661a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="午餐点点">
+<title>午餐点点 · 孩子午餐点餐</title>
+<style>
+:root{
+  --bg:#fff8ef; --card:#fff; --ink:#3a2e2a; --sub:#756760; --line:#f1e4d6;
+  --pri:#ff8a3d; --pri2:#ffb347; --green:#2fbf7f; --blue:#4aa3ff; --pink:#ff5c8a; --red:#ef4444;
+  --meat:#ff7a59; --veg:#2fbf7f; --soup:#4aa3ff; --fruit:#ff5c8a; --staple:#c08b3a; --extra:#9b6bff; --dish:#ff9f1c;
+  --r:20px;
+  /* 主题变量（默认=橙色暖色） */
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --hdr:linear-gradient(135deg,#e8661a,#e0741a); --hdr-fam:linear-gradient(135deg,#1c7ed6,#5b6ee8); --hdr-ink:#fff; --hdr-shadow:rgba(255,138,61,.25);
+  --btn-pri:#e8661a; --btn-pri-bg:#e8661a; --btn-green:#1f9d6a; --btn-blue:#1c7ed6; --accent:#1c7ed6; --accent-soft:#eef5ff;
+  --soft:#fff3e8; --info-bg:#e8f3ff; --info-ink:#1d5fa8; --x-bg:#f6eee6; --x-ink:#8a6e5e; --plus:#d9c6b3; --opt-line:#e6dccf; --opt-bg:#fffdf9;
+  --bgimg:none; --rb:16px; --shadow:rgba(120,80,40,.07); --chip-on:var(--ink);
+}
+/* 🎀 粉色小猫咪（原创主题） */
+html[data-theme=kitty]{
+  --bg:#fff5f8; --ink:#4a2a36; --sub:#8a5566; --line:#f9d3e0;
+  --pri:#e0457b; --pri2:#ff8fb1; --green:#2f9e75; --blue:#3b82c4; --pink:#e0457b; --red:#d9304f;
+  --meat:#e8577a; --veg:#3c9f74; --soup:#4c86c6; --fruit:#d64c8f; --staple:#b5784a; --extra:#9467d1; --dish:#e07a3c;
+  --font:"Arial Rounded MT Bold","Yuanti SC","YouYuan","幼圆","PingFang SC","Hiragino Maru Gothic ProN","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --hdr:linear-gradient(135deg,#ffe1ec,#ffc2d6); --hdr-fam:linear-gradient(135deg,#ffe1ec,#ead6f7); --hdr-ink:#5a2238; --hdr-shadow:rgba(224,69,123,.18);
+  --btn-pri:#d6336c; --btn-pri-bg:linear-gradient(135deg,#e8538a,#c92a62); --btn-green:#25865f; --btn-blue:#c2255c; --accent:#d6336c; --accent-soft:#ffe8f0;
+  --soft:#ffeef4; --info-bg:#ffeaf2; --info-ink:#a3214f; --x-bg:#ffe8f0; --x-ink:#b04a6e; --plus:#f5b3c8; --opt-line:#f7c9d8; --opt-bg:#fffafc;
+  --r:24px; --rb:22px; --shadow:rgba(224,69,123,.10); --chip-on:#d6336c;
+  --bgimg:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cg fill='%23f7c6d7' fill-opacity='.45'%3E%3Cpath d='M30 38c-6-8-18-2-12 8l12 10 12-10c6-10-6-16-12-8z'/%3E%3Cg transform='translate(108 100)'%3E%3Cellipse cx='0' cy='8' rx='9' ry='7'/%3E%3Ccircle cx='-10' cy='-4' r='4'/%3E%3Ccircle cx='-3' cy='-9' r='4'/%3E%3Ccircle cx='5' cy='-9' r='4'/%3E%3Ccircle cx='11' cy='-3' r='4'/%3E%3C/g%3E%3Cpath d='M118 30c-4-5-11-1-7 5l7 6 7-6c4-6-3-10-7-5z'/%3E%3C/g%3E%3C/svg%3E");
+}
+/* 🌿 清新绿 */
+html[data-theme=mint]{
+  --bg:#f2fbf7; --ink:#1f3a33; --sub:#4d6a64; --line:#d5ece3;
+  --pri:#1f8a68; --pri2:#5cc9a7; --green:#1f8a68; --blue:#1a7fc0; --pink:#d9467a;
+  --meat:#d8613f; --veg:#2a8f62; --soup:#2f7fbf; --fruit:#cf4c78; --staple:#a07a35; --extra:#7a62c4; --dish:#c9761e;
+  --hdr:linear-gradient(135deg,#1b7a5c,#1f6f99); --hdr-fam:linear-gradient(135deg,#1d6d95,#187a5a); --hdr-ink:#fff; --hdr-shadow:rgba(31,138,104,.22);
+  --btn-pri:#1f8a68; --btn-pri-bg:#1f8a68; --btn-green:#1f8a68; --btn-blue:#1a7fc0; --accent:#1a7fc0; --accent-soft:#e6f3fb;
+  --soft:#e3f6ee; --info-bg:#e3f2fb; --info-ink:#195e8c; --x-bg:#e6f2ed; --x-ink:#4d6a64; --plus:#a9d3c3; --opt-line:#cfe6dc; --opt-bg:#fafefc;
+  --shadow:rgba(30,100,80,.08); --chip-on:#1f3a33;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg) var(--bgimg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.5;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px 120px}
+header{position:sticky;top:0;z-index:20;background:var(--hdr);color:var(--hdr-ink);box-shadow:0 4px 16px var(--hdr-shadow)}
+header .hin{max-width:1080px;margin:0 auto;padding:12px 16px 0;display:flex;align-items:center;gap:12px}
+header h1{margin:0;font-size:26px;letter-spacing:1px;flex:1;white-space:nowrap}
+header h1 small{font-size:14px;font-weight:500;opacity:.9;margin-left:8px}
+body[data-mode=fam] header{background:var(--hdr-fam)}
+#modeBtn{background:rgba(255,255,255,.95);color:var(--ink);padding:10px 16px;border-radius:999px;font-weight:700;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+nav{max-width:1080px;margin:0 auto;display:flex;gap:6px;padding:10px 12px 0;overflow-x:auto}
+nav .tab{flex:1;min-width:84px;padding:10px 8px 12px;border-radius:16px 16px 0 0;color:var(--hdr-ink);font-weight:700;font-size:17px;display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.85}
+nav .tab span{font-size:26px;line-height:1}
+nav .tab.on{background:var(--bg);color:var(--ink);opacity:1}
+h2{font-size:22px;margin:22px 0 12px}
+h3{font-size:19px;margin:16px 0 8px}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:0 2px 10px var(--shadow);margin-bottom:14px}
+.muted{color:var(--sub);font-size:15px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 18px;border-radius:var(--rb);background:#fff;border:2px solid var(--line);font-weight:700;font-size:17px;min-height:52px;transition:transform .08s}
+.btn:active{transform:scale(.96)}
+.btn.pri{background:var(--btn-pri-bg);border-color:var(--btn-pri);color:#fff}
+.btn.green{background:var(--btn-green);border-color:var(--btn-green);color:#fff}
+.btn.blue{background:var(--btn-blue);border-color:var(--btn-blue);color:#fff}
+.btn.ghost{background:transparent}
+.btn.sm{min-height:40px;padding:6px 12px;font-size:15px;border-radius:12px}
+.btn.big{width:100%;min-height:68px;font-size:22px;border-radius:22px;margin-top:12px;box-shadow:0 6px 16px var(--hdr-shadow)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.seg{display:inline-flex;background:#fff;border-radius:16px;padding:4px;border:2px solid var(--line);gap:4px}
+.seg button{padding:8px 16px;border-radius:12px;font-weight:700;font-size:16px;min-height:44px}
+.seg button.on{background:var(--accent);color:#fff}
+/* dates */
+.dates{display:flex;gap:10px;overflow-x:auto;padding:16px 2px 6px;scrollbar-width:none}
+.dates::-webkit-scrollbar{display:none}
+.date{flex:0 0 auto;min-width:86px;padding:10px 8px;border-radius:18px;background:#fff;border:3px solid transparent;text-align:center;box-shadow:0 2px 8px rgba(120,80,40,.07)}
+.date b{display:block;font-size:20px}
+.date i{font-style:normal;font-size:14px;color:var(--sub)}
+.date .st{display:block;font-size:13px;margin-top:2px}
+.date.on{border-color:var(--pri);background:var(--soft)}
+.date.lock{opacity:.6}
+.banner{border-radius:18px;padding:12px 16px;margin:10px 0;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.banner.ok{background:#e9f9f1;color:#167a4d}
+.banner.warn{background:#fff1d6;color:#9a5a00}
+.banner.lock{background:#fde8e8;color:#a42828}
+.banner.info{background:var(--info-bg);color:var(--info-ink)}
+.banner .cd{font-variant-numeric:tabular-nums;font-size:20px}
+/* slots */
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-top:8px}
+.slot{position:relative;background:#fff;border-radius:22px;padding:14px 10px 12px;text-align:center;min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px dashed var(--line);box-shadow:0 2px 10px rgba(120,80,40,.06)}
+.slot.full{border-style:solid;border-color:transparent}
+.slot .lab{position:absolute;top:10px;left:10px;font-size:13px;font-weight:700;color:#fff;padding:2px 10px;border-radius:999px}
+.slot .emo{font-size:60px;line-height:1.1;margin-top:14px}
+.slot .nm{font-weight:800;font-size:19px;margin-top:6px;line-height:1.3;word-break:break-all}
+.slot .plus{font-size:44px;color:var(--plus);margin-top:10px}
+.slot .tip{color:var(--sub);font-size:15px}
+.slot .x{position:absolute;top:6px;right:6px;width:36px;height:36px;border-radius:50%;background:var(--x-bg);font-size:18px;color:var(--x-ink)}
+.slot .rd{margin-top:6px;padding:4px 12px;border-radius:999px;background:var(--info-bg);color:var(--info-ink);font-size:14px;font-weight:700}
+.c-side{background:#7cb66a}.c-meal-rice{background:#e8a33c}.c-meal-noodle{background:#d9774a}.c-meal-other{background:#8c79c9}
+.meals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.meal{background:#fff;border:3px solid var(--line);border-radius:20px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;min-height:44px}
+.meal span{font-size:40px;line-height:1.1}.meal b{font-size:18px;margin-top:2px}.meal i{font-style:normal;font-size:12.5px;color:var(--sub);margin-top:2px;line-height:1.3}
+.meal.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px var(--hdr-shadow)}
+.meal:disabled{opacity:.55}
+.slot.opt{border-color:var(--opt-line);background:var(--opt-bg)}.slot.opt .plus{color:var(--opt-line)}
+.dcard.opt{border-style:dashed;opacity:.8}
+.subs button{font-size:14px}
+.seg.mini button{padding:4px 10px;min-height:36px;font-size:18px}
+@media(max-width:560px){.meal span{font-size:30px}.meal b{font-size:15px}.meal i{display:none}}
+.c-meat{background:var(--meat)}.c-veg{background:var(--veg)}.c-soup{background:var(--soup)}.c-fruit{background:var(--fruit)}.c-staple{background:var(--staple)}.c-extra{background:var(--extra)}.c-dish{background:var(--dish)}
+.tag{display:inline-block;font-size:13px;font-weight:700;color:#fff;padding:1px 9px;border-radius:999px;vertical-align:middle;box-shadow:inset 0 0 0 999px rgba(0,0,0,.3)}
+/* dish grid */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.dcard{background:#fff;border-radius:18px;padding:12px 8px;text-align:center;border:2px solid var(--line);position:relative}
+.dcard .emo{font-size:46px;line-height:1.15}
+.dcard .nm{font-weight:800;font-size:17px}
+.dcard .mt{font-size:13px;color:var(--sub)}
+.dcard .cnt{position:absolute;top:6px;right:8px;font-size:12px;background:#fff1d6;color:#9a5a00;border-radius:999px;padding:0 8px;font-weight:700}
+.dcard.sel{border-color:var(--pri);background:var(--soft)}
+.search{width:100%;padding:14px 16px;border-radius:16px;border:2px solid var(--line);font-size:18px;background:#fff;outline:none}
+.search:focus{border-color:var(--pri)}
+.cats{display:flex;gap:8px;overflow-x:auto;padding:10px 0}
+.cats button{flex:0 0 auto;padding:8px 14px;border-radius:999px;background:#fff;border:2px solid var(--line);font-weight:700;font-size:16px;min-height:44px}
+.cats button.on{background:var(--chip-on);color:#fff;border-color:var(--chip-on)}
+/* history */
+.hitem{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.hitem .d{min-width:96px;font-weight:800}
+.hitem .emos{flex:1;font-size:15px;min-width:200px}
+.hitem .emos span{display:inline-block;margin:2px 8px 2px 0;white-space:nowrap}
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(40,25,15,.45);z-index:50;display:none;align-items:flex-end;justify-content:center}
+#modal.show{display:flex}
+#modal .box{background:var(--bg);width:100%;max-width:820px;max-height:92vh;overflow:auto;border-radius:26px 26px 0 0;padding:18px 18px 28px;animation:up .2s ease}
+@media(min-width:700px){#modal{align-items:center}#modal .box{border-radius:26px;max-height:88vh}}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.mhead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.mhead h2{flex:1;margin:0}
+.close{width:44px;height:44px;border-radius:50%;background:#fff;font-size:22px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.recipe .hero{font-size:84px;text-align:center;line-height:1.1}
+.recipe ul{padding-left:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.recipe ul li{background:#fff;border-radius:12px;padding:6px 12px;border:1px solid var(--line);font-size:16px}
+.recipe ol{padding-left:24px}
+.recipe ol li{margin:6px 0}
+.tipbox{background:#fff7e0;border-radius:14px;padding:10px 14px;font-size:15px;color:#7a5a00;margin-top:8px}
+.photos{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.photos .ph{position:relative}
+.photos img{width:120px;height:120px;object-fit:cover;border-radius:14px;display:block;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.photos .ph button{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.55);color:#fff;border-radius:50%;width:28px;height:28px;font-size:14px}
+.photos .ph i{position:absolute;left:6px;bottom:4px;font-style:normal;font-size:12px;color:#fff;text-shadow:0 1px 3px #000}
+/* family */
+.day h3{margin:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+details.it{border-top:1px dashed var(--line);padding:10px 0}
+details.it:first-of-type{border-top:none}
+details.it summary{list-style:none;display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:700;font-size:18px}
+details.it summary::-webkit-details-marker{display:none}
+details.it summary .e{font-size:36px}
+details.it summary .arr{margin-left:auto;color:var(--sub);font-size:14px;font-weight:500}
+details.it[open] summary .arr{transform:rotate(180deg)}
+.upl{display:inline-flex}
+/* 整餐图 */
+.mealph{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--soft);border:2px dashed var(--opt-line);border-radius:var(--r);padding:12px;margin:8px 0 12px}
+.mealph.has{border-style:solid;border-color:var(--line);background:#fff}
+.mealph .mimg{padding:0;border:3px solid #fff;border-radius:16px;box-shadow:0 3px 10px var(--shadow),0 0 0 2px var(--line);overflow:hidden;line-height:0;flex:none}
+.mealph .mimg img{width:160px;height:120px;object-fit:cover;display:block}
+.mealph .mt{flex:1;min-width:150px}.mealph .mt b{display:block;font-size:17px}.mealph .mt span{font-size:14px;color:var(--sub)}
+.mealph .row{gap:8px}
+.hthumb{padding:0;border:3px solid #fff;border-radius:14px;box-shadow:0 2px 8px var(--shadow),0 0 0 2px var(--line);overflow:hidden;line-height:0;flex:none}
+.hthumb img{width:88px;height:66px;object-fit:cover;display:block}
+.bigimg{text-align:center}.bigimg img{max-width:100%;max-height:70vh;border-radius:16px;box-shadow:0 4px 16px var(--shadow)}
+html[data-theme=kitty] .mealph{border-radius:26px}html[data-theme=kitty] .mealph .mimg,html[data-theme=kitty] .hthumb{border-radius:20px}
+@media(max-width:520px){.mealph .mimg img{width:120px;height:90px}.hthumb img{width:72px;height:54px}.mealph{gap:10px;padding:10px}}
+.upl input{display:none}
+/* shopping */
+.shop li{list-style:none;display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.shop ul{padding:0;margin:0}
+.shop input[type=checkbox]{width:28px;height:28px;accent-color:var(--green);flex:0 0 auto}
+.shop .nm{font-weight:700;font-size:19px}
+.shop .q{margin-left:auto;font-weight:800;color:var(--btn-pri);font-size:19px;white-space:nowrap}
+.shop li.done .nm,.shop li.done .q{text-decoration:line-through;color:#bbb}
+.shop .for{font-size:13px;color:var(--sub)}
+/* form */
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:700;margin-bottom:6px}
+.in{width:100%;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:#fff;font-size:18px;outline:none}
+.in:focus{border-color:var(--pri)}
+textarea.in{min-height:140px;resize:vertical}
+.ingrow{display:grid;grid-template-columns:2fr 1fr 1fr 44px;gap:8px;margin-bottom:8px}
+.ingrow .in{padding:10px}
+.emopick{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.emopick button{font-size:28px;width:48px;height:48px;border-radius:12px;background:#fff;border:2px solid var(--line)}
+.emopick button.on{border-color:var(--pri);background:var(--soft)}
+.soon{border:2px dashed var(--opt-line);background:var(--opt-bg)}
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:rgba(40,30,25,.92);color:#fff;padding:12px 22px;border-radius:999px;font-weight:700;opacity:0;transition:.25s;z-index:99;pointer-events:none;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+.empty{text-align:center;padding:30px 10px;color:var(--sub)}
+.empty .e{font-size:56px}
+.new{font-size:11px;background:var(--info-bg);color:var(--info-ink);border-radius:999px;padding:0 6px;font-weight:700;margin-left:4px}
+/* 主题装饰 */
+#brand{display:inline-flex;align-items:center;vertical-align:middle;margin-right:6px}
+#brand svg,#brand img{width:44px;height:44px;display:block}
+#brand img{border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+#themeBtn{background:rgba(255,255,255,.95);color:var(--ink);padding:10px 14px;border-radius:999px;font-weight:800;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.12);border:2px solid var(--pri);white-space:nowrap}
+body[data-mode=fam] #themeBtn{display:none}
+.hbow{display:none}
+html[data-theme=kitty] .hbow{display:inline-block;width:34px;height:22px;margin-left:4px;vertical-align:middle}
+html[data-theme=kitty] .card,html[data-theme=kitty] .slot,html[data-theme=kitty] .dcard,html[data-theme=kitty] .meal,html[data-theme=kitty] .date{border-radius:26px}
+html[data-theme=kitty] .card{border:2px solid #fde1ea}
+html[data-theme=kitty] .slot.full{background:linear-gradient(180deg,#fff,#fff4f8)}
+html[data-theme=kitty] .btn.big{background:linear-gradient(135deg,#e8538a,#c92a62);border-color:#c92a62}
+html[data-theme=kitty] #modeBtn{border:2px solid #f3a6c1}
+.empty .e svg{width:96px;height:96px}
+.okpic svg{width:120px;height:120px}
+.themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.thc{border:3px solid var(--line);border-radius:20px;padding:10px;background:#fff;text-align:center;min-height:44px}
+.thc.on{border-color:var(--pri);box-shadow:0 0 0 3px var(--hdr-shadow)}
+.thc .pv{height:70px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:28px;margin-bottom:6px}
+.thc .pv svg{width:52px;height:52px}
+.thc b{display:block;font-size:17px}.thc i{font-style:normal;font-size:13px;color:var(--sub)}
+.timg{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--line)}
+@media(max-width:520px){
+  body{font-size:17px}
+  #brand svg,#brand img{width:34px;height:34px}
+  #themeBtn{padding:8px 10px;font-size:14px}
+  html[data-theme=kitty] .hbow{display:none}
+  header h1{font-size:21px}
+  header h1 small{display:none}
+  #modeBtn{padding:8px 12px;font-size:15px}
+  nav .tab{min-width:70px;font-size:15px}
+  nav .tab span{font-size:24px}
+  .slots{grid-template-columns:repeat(2,1fr);gap:10px}
+  .slot{min-height:150px}
+  .slot .emo{font-size:50px}
+  .dgrid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .dcard .emo{font-size:38px}
+  .dcard .nm{font-size:15px}
+  .btn{font-size:16px;padding:10px 14px}
+  .ingrow{grid-template-columns:1.6fr 1fr 1fr 40px}
+}
+</style>
+</head>
+<body data-mode="kid">
+<header>
+  <div class="hin"><h1><span id="brand">🍱</span>午餐点点<svg class="hbow" viewBox="0 0 34 22" aria-hidden="true"><path d="M17 11 3 3c-3 2-3 14 0 16zM17 11l14-8c3 2 3 14 0 16z" fill="#e8364f"/><circle cx="17" cy="11" r="4" fill="#c4213a"/></svg><small>中午想吃啥，提前告诉家人</small></h1><button id="themeBtn" data-act="themepick" title="换主题">🎨 换主题</button><button id="modeBtn" data-act="mode">👨‍👩‍👧 家人端</button></div>
+  <nav id="nav"></nav>
+</header>
+<main class="wrap" id="view"></main>
+<div id="modal"><div class="box" id="mbox"></div></div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ========== 预制菜单（一人份，小学生午餐量） ========== */
+function parseIng(s){const p=s.trim().split(/\s+/);if(p.length>=3&&!isNaN(+p[1]))return{name:p[0],qty:+p[1],unit:p[2]};return{name:p[0],qty:null,unit:p[1]||'适量'}}
+function S(sub,d){d.sub=sub;return d}
+function D(id,name,cat,emoji,mins,ings,steps,tip){return{id,name,cat,emoji,mins,ings:ings.map(parseIng),steps,tip:tip||'',preset:true}}
+const PRESET=[
+D('m01','西红柿炒鸡蛋','meat','🍅',10,['西红柿 1 个','鸡蛋 2 个','葱 5 克','白糖 适量','盐 适量','食用油 适量'],['西红柿顶部划十字，开水烫一下去皮，切小块。','鸡蛋加一小撮盐打散。','热锅多放点油，倒入蛋液炒到刚凝固就盛出。','锅里留少许油，下西红柿中火炒出汤汁，加一点糖和盐。','倒回鸡蛋翻炒均匀，撒葱花出锅。']),
+D('m02','红烧肉','meat','🥩',60,['猪五花肉 150 克','冰糖 10 克','葱 5 克','姜 3 克','八角 1 个','料酒 适量','生抽 适量','老抽 适量'],['五花肉切 2 厘米见方的块，冷水下锅加料酒焯水，捞出洗净。','锅里放少许油，小火炒冰糖至枣红色起小泡。','下肉块翻炒均匀上色，加葱段、姜片、八角炒香。','加生抽、老抽和没过肉的热水，小火炖 45 分钟。','开大火收汁，汤汁浓稠裹住肉块即可。'],'孩子吃可以少放老抽，颜色浅一点也很香。'),
+D('m03','糖醋里脊','meat','🍖',30,['猪里脊 150 克','鸡蛋 1 个','淀粉 30 克','番茄酱 20 克','白糖 10 克','白醋 适量','料酒 适量','盐 适量','食用油 适量'],['里脊切 1 厘米粗的条，加盐、料酒腌 10 分钟。','加一个蛋清和淀粉抓匀挂糊。','油六成热下肉条炸至定型捞出，油再烧热复炸 1 分钟至金黄。','锅留底油，下番茄酱、糖、白醋和少许水，小火熬成浓汁。','倒入里脊快速翻匀裹汁，马上出锅。']),
+D('m04','宫保鸡丁（不辣）','meat','🐔',20,['鸡胸肉 120 克','熟花生米 20 克','黄瓜 50 克','胡萝卜 30 克','葱 5 克','生抽 适量','醋 适量','白糖 适量','淀粉 适量'],['鸡胸肉切丁，加生抽和淀粉抓匀腌 10 分钟。','黄瓜、胡萝卜切成和鸡丁差不多大的丁。','调碗汁：生抽、醋、糖、淀粉加小半碗水搅匀。','热油滑炒鸡丁到变白盛出，再炒胡萝卜丁和黄瓜丁 1 分钟。','倒回鸡丁，淋入碗汁翻匀，出锅前加花生米。'],'给孩子做不放干辣椒和花椒；花生米最后放才脆。'),
+D('m05','京酱肉丝','meat','🥢',20,['猪里脊 120 克','豆腐皮 1 张','黄瓜 50 克','葱 20 克','甜面酱 15 克','白糖 适量','淀粉 适量','食用油 适量'],['里脊切细丝，加少许淀粉和水抓匀腌 10 分钟。','大葱、黄瓜切细丝铺在盘底；豆腐皮切方片，上锅蒸 2 分钟。','热油滑炒肉丝至变色盛出。','少油下甜面酱、一点糖和少许水，小火炒出酱香。','倒回肉丝翻匀裹满酱汁，放在葱丝上，用豆腐皮卷着吃。']),
+D('m06','土豆烧牛肉','meat','🐂',70,['牛腩 150 克','土豆 1 个','胡萝卜 50 克','葱 5 克','姜 3 克','八角 1 个','生抽 适量','老抽 适量','盐 适量'],['牛腩切块，冷水下锅焯水，捞出洗净。','少油炒香葱姜和八角，下牛肉翻炒，加生抽、老抽上色。','加没过牛肉的热水，小火炖 50 分钟。','放入土豆块和胡萝卜块，再炖 15 分钟至土豆软糯。','加盐调味，大火收汁到汤汁浓稠。'],'可以前一晚炖好牛肉，第二天中午加土豆一热就行。'),
+D('m07','可乐鸡翅','meat','🍗',30,['鸡翅中 4 个','可乐 200 毫升','姜 3 克','料酒 适量','生抽 适量','老抽 适量'],['鸡翅两面各划两刀，冷水加料酒焯水后捞出擦干。','少油中火把鸡翅两面煎到金黄。','放姜片，加生抽、老抽翻炒上色。','倒入可乐没过鸡翅，中小火炖 15 分钟。','开大火收汁，汁变浓稠发亮就出锅。']),
+D('m08','清蒸鲈鱼','meat','🐟',25,['鲈鱼 300 克','葱 10 克','姜 5 克','料酒 适量','蒸鱼豉油 适量','食用油 适量'],['鲈鱼处理干净，两面划几刀，抹料酒，肚子里和刀口塞姜片。','水开后上锅，大火蒸 8～10 分钟。','倒掉盘里蒸出的汤水，去掉姜片，铺上葱丝。','淋蒸鱼豉油，再浇一勺烧热的油激出香味。'],'送饭前可以先把大刺挑掉，孩子吃更放心。'),
+D('m09','鱼香肉丝（微甜不辣）','meat','🥕',20,['猪里脊 120 克','胡萝卜 40 克','干木耳 5 克','青椒 0.5 个','葱 5 克','姜 3 克','蒜 2 瓣','生抽 适量','醋 适量','白糖 适量','淀粉 适量'],['木耳提前泡发切丝，胡萝卜、青椒切丝。','肉丝加生抽和淀粉抓匀腌 10 分钟。','调鱼香汁：糖、醋、生抽、淀粉和少许水（糖醋比例约 1:1）。','滑炒肉丝变色盛出；炒香葱姜蒜末，下配菜丝炒软。','倒回肉丝，淋鱼香汁大火翻匀出锅。'],'孩子吃可不放泡椒和豆瓣酱，酸甜口也很下饭。'),
+D('m10','木须肉','meat','🍳',15,['猪里脊 80 克','鸡蛋 2 个','干木耳 5 克','黄瓜 50 克','葱 5 克','生抽 适量','淀粉 适量','盐 适量'],['木耳泡发撕小朵，黄瓜切片，肉切薄片用生抽和淀粉抓匀。','鸡蛋打散，炒熟成块盛出。','热油滑炒肉片至变色。','下葱花、木耳、黄瓜片炒 1 分钟。','倒回鸡蛋，加盐翻匀出锅。']),
+D('m11','青椒炒肉丝','meat','🫑',15,['猪里脊 100 克','青椒 1 个','生抽 适量','淀粉 适量','盐 适量','食用油 适量'],['里脊切丝，加生抽、淀粉抓匀腌 10 分钟。','青椒去籽切丝。','热油下肉丝快速滑散，炒到变色盛出。','炒青椒丝到断生，倒回肉丝，加盐翻匀出锅。'],'选不辣的菜椒或薄皮青椒更适合孩子。'),
+D('v01','醋溜白菜','veg','🥬',10,['大白菜 200 克','蒜 2 瓣','醋 适量','生抽 适量','白糖 适量','淀粉 适量'],['白菜帮斜刀片成薄片，叶子撕成块。','调汁：醋、生抽、少许糖、淀粉加水搅匀。','热油爆香蒜末，先下白菜帮大火炒到微软。','再下菜叶炒软，倒入调好的汁翻匀，汤汁变亮就出锅。']),
+D('v02','地三鲜（少油版）','veg','🍆',20,['土豆 0.5 个','长茄子 0.5 根','青椒 0.5 个','蒜 2 瓣','生抽 适量','白糖 适量','淀粉 适量'],['土豆、茄子切滚刀块，青椒切块。','茄子块撒少许淀粉拌匀，这样少吸油。','少油分别把土豆块煎熟、茄子块煎软，盛出。','爆香蒜末，倒回土豆茄子和青椒，加生抽、糖和少许水淀粉翻匀出锅。']),
+D('v03','醋溜土豆丝','veg','🥔',15,['土豆 1 个','青椒 0.5 个','葱 5 克','醋 适量','盐 适量'],['土豆切细丝，泡水洗掉表面淀粉，沥干。','青椒切丝。','热油炒香葱花，下土豆丝大火快炒 1 分钟。','沿锅边淋醋，加青椒丝和盐，再炒 1 分钟出锅。'],'孩子吃不放干辣椒；喜欢软一点就多炒半分钟。'),
+D('v04','蒜蓉西兰花','veg','🥦',10,['西兰花 150 克','蒜 3 瓣','盐 适量','蚝油 适量'],['西兰花掰成小朵，用淡盐水泡 10 分钟后洗净。','开水里加几滴油和少许盐，下西兰花焯 1 分钟捞出。','热油小火炒香蒜末。','下西兰花大火翻炒，加盐或少许蚝油调味出锅。']),
+D('v05','蚝油生菜','veg','🥗',8,['生菜 200 克','蒜 2 瓣','蚝油 适量','生抽 适量','淀粉 适量'],['生菜洗净，开水焯 10 秒捞出，沥水摆盘。','少油炒香蒜末，加蚝油、生抽和小半碗水烧开。','用水淀粉勾薄芡，浇在生菜上。']),
+D('v06','干煸豆角','veg','🫛',20,['豆角 200 克','蒜 3 瓣','生抽 适量','盐 适量'],['豆角撕去两头和筋，掰成段，洗净后彻底沥干。','少油中小火把豆角慢慢煸到表皮起皱、颜色变深。','盛出豆角，用余油炒香蒜末。','倒回豆角，加生抽和盐翻匀出锅。'],'⚠️ 豆角一定要完全熟透，吃不出生豆味才行，没熟透可能引起中毒。'),
+D('v07','家常豆腐','veg','🧈',20,['北豆腐 200 克','青椒 0.5 个','胡萝卜 30 克','葱 5 克','生抽 适量','蚝油 适量','淀粉 适量'],['豆腐切 1 厘米厚的三角片，青椒、胡萝卜切片。','少油把豆腐两面煎到金黄，盛出。','炒香葱花，下胡萝卜和青椒炒 1 分钟。','倒回豆腐，加生抽、蚝油和小半碗水焖 3 分钟。','水淀粉勾薄芡，轻轻翻匀出锅。']),
+D('v08','拍黄瓜','veg','🥒',5,['黄瓜 150 克','蒜 2 瓣','醋 适量','生抽 适量','香油 适量','白糖 适量'],['黄瓜洗净，用刀拍裂后切成小段。','蒜切末。','加醋、生抽、一点糖和几滴香油拌匀。'],'送饭路上时间长的话，调料单独装，吃前再拌更脆。'),
+D('v09','西葫芦炒鸡蛋','veg','🥚',12,['西葫芦 200 克','鸡蛋 1 个','葱 5 克','盐 适量','食用油 适量'],['西葫芦切半圆薄片，鸡蛋打散。','鸡蛋炒熟成块盛出。','炒香葱花，下西葫芦片大火炒到微微透明。','倒回鸡蛋，加盐翻匀出锅。']),
+D('s01','西红柿鸡蛋汤','soup','🍅',10,['西红柿 1 个','鸡蛋 1 个','葱 3 克','盐 适量','香油 适量'],['西红柿切小块，鸡蛋打散。','少油把西红柿炒出汁。','加两碗水烧开，煮 2 分钟。','转小火，把蛋液画圈倒入，等蛋花浮起轻轻推开。','加盐，滴香油，撒葱花。']),
+D('s02','紫菜蛋花汤','soup','🥣',5,['紫菜 3 克','虾皮 3 克','鸡蛋 1 个','葱 3 克','盐 适量','香油 适量'],['紫菜撕小片，和虾皮一起放进碗里；鸡蛋打散。','锅里烧开两碗水，转小火慢慢淋入蛋液。','蛋花浮起后把汤冲进紫菜碗里。','加少许盐（虾皮本身有咸味），滴香油、撒葱花。']),
+D('s03','冬瓜排骨汤','soup','🍲',60,['猪排骨 150 克','冬瓜 200 克','姜 3 克','料酒 适量','盐 适量'],['排骨冷水下锅加料酒焯水，捞出洗净。','排骨和姜片放锅里，加足量热水，小火炖 40 分钟。','冬瓜去皮切厚片，放入再煮 10 分钟至透明。','出锅前加盐调味。'],'可以前一晚炖好排骨汤，中午加冬瓜一煮就好。'),
+D('s04','白菜豆腐汤','soup','🥘',15,['大白菜 100 克','北豆腐 100 克','葱 3 克','盐 适量','香油 适量'],['白菜切块，豆腐切小块。','少油炒香葱花，下白菜炒软。','加两碗水烧开，放豆腐煮 5 分钟。','加盐，滴香油出锅。']),
+D('s05','小白菜丸子汤','soup','🍡',20,['猪肉末 80 克','小白菜 100 克','姜 3 克','淀粉 适量','生抽 适量','盐 适量'],['肉末加姜末、生抽、少许盐和淀粉，顺一个方向搅上劲。','锅里水烧到微开，用勺子把肉馅挤成小丸子下锅。','小火煮到丸子全部浮起，撇去浮沫。','放小白菜煮 1 分钟，加盐出锅。']),
+D('f01','苹果','fruit','🍎',3,['苹果 1 个'],['苹果洗净，去皮去核。','切成小块装进饭盒。','泡一下淡盐水可以防止变色。']),
+D('f02','香蕉','fruit','🍌',1,['香蕉 1 根'],['选黄皮的香蕉，整根带皮装好，吃时再剥。']),
+D('f03','橙子','fruit','🍊',3,['橙子 1 个'],['橙子洗净，切成瓣或剥好装盒。']),
+D('f04','葡萄','fruit','🍇',5,['葡萄 150 克'],['剪成单颗，用面粉或淀粉水轻轻搓洗。','清水冲净，沥干装盒。']),
+D('f05','猕猴桃','fruit','🥝',3,['猕猴桃 1 个'],['猕猴桃去皮，切成片装盒；或对半切开带个小勺挖着吃。']),
+D('f06','圣女果','fruit','🍅',3,['圣女果 100 克'],['去蒂，用清水泡 5 分钟后冲洗干净。','沥干装盒。']),
+D('f07','草莓','fruit','🍓',5,['草莓 150 克'],['带蒂用清水泡 5 分钟，冲洗干净。','去蒂，沥干装盒。']),
+S('rice',D('z01','米饭','staple','🍚',30,['大米 80 克'],['大米淘洗两遍。','米和水约 1:1.2，放进电饭煲煮饭档。','跳闸后再焖 10 分钟。'])),
+S('rice',D('z02','杂粮饭','staple','🍙',40,['大米 50 克','小米 15 克','糙米 15 克'],['糙米提前泡 2 小时以上（可前一晚泡上）。','三种米一起淘洗。','加比平时多一点的水，用电饭煲杂粮饭或煮饭档。','煮好后焖 10 分钟。'])),
+S('noodle',D('n01','番茄鸡蛋面','staple','🍜',15,['挂面 80 克','西红柿 1 个','鸡蛋 1 个','小油菜 50 克','葱 3 克','盐 适量','生抽 适量','食用油 适量'],['西红柿切小块，鸡蛋打散，小油菜洗净。','少油炒鸡蛋到凝固盛出；再炒西红柿出汁，加少许生抽。','加两碗开水煮成番茄汤底，倒回鸡蛋，加盐调味。','另起一锅水把挂面煮到八成熟，放小油菜烫熟。','捞出面和菜，浇上番茄鸡蛋汤，撒葱花。'],'送饭时面和汤分开装，到了再浇，面不会坨。')),
+S('noodle',D('n02','红烧牛肉面（不辣）','staple','🐂',90,['鲜面条 150 克','牛腩 100 克','小油菜 50 克','冰糖 5 克','葱 5 克','姜 3 克','八角 1 个','生抽 适量','老抽 适量','盐 适量'],['牛腩切块，冷水下锅焯水后洗净。','少油炒化冰糖，下牛肉翻炒上色，加葱姜八角、生抽、老抽炒香。','加足量热水，小火炖 70 分钟到牛肉软烂，加盐调味。','面条煮熟捞到碗里，小油菜烫熟放上。','浇上牛肉和汤即可。'],'牛肉可以前一晚炖好，第二天只煮面，10 分钟搞定；孩子吃不放辣椒油。')),
+S('noodle',D('n03','老北京炸酱面','staple','🥢',30,['鲜面条 150 克','猪五花肉 60 克','黄豆酱 20 克','甜面酱 20 克','黄瓜 50 克','胡萝卜 30 克','绿豆芽 30 克','葱 5 克','食用油 适量'],['五花肉切小丁；黄豆酱和甜面酱按 1:1 混合，加少许水调开。','少油小火把肉丁煸出油、微微焦黄，下葱花炒香。','倒入调好的酱，小火慢慢熬 10 分钟，不停搅拌防粘锅。','黄瓜、胡萝卜切细丝，豆芽焯熟，做成菜码。','面条煮熟过一下温水，放菜码，浇一勺炸酱拌匀。'],'炸酱咸，给孩子少放一点；可以一次熬一小罐冷藏，吃好几次。')),
+S('noodle',D('n04','打卤面','staple','🍄',25,['鲜面条 150 克','猪里脊 50 克','鸡蛋 1 个','干木耳 3 克','香菇 2 朵','生抽 适量','淀粉 适量','盐 适量'],['木耳泡发撕小朵，香菇切片，里脊切薄片。','锅里加两碗水烧开，下肉片、香菇、木耳煮 5 分钟。','加生抽和盐调味，用水淀粉勾成稍稠的卤。','鸡蛋打散，画圈淋进卤里，等蛋花浮起就关火。','面条煮熟捞出，浇上卤即可。'])),
+S('noodle',D('n05','鸡蛋汤面','staple','🥣',10,['挂面 80 克','鸡蛋 1 个','小油菜 50 克','葱 3 克','盐 适量','香油 适量'],['锅里水烧开，下挂面煮 3 分钟。','磕入一个鸡蛋，不要搅动，小火煮成荷包蛋。','放小油菜煮 1 分钟。','加盐，滴香油，撒葱花出锅。'],'最简单的一款，早上赶时间时用。')),
+S('noodle',D('n06','鸡丝凉面（不辣）','staple','🥒',20,['鲜面条 150 克','鸡胸肉 80 克','黄瓜 50 克','胡萝卜 20 克','芝麻酱 15 克','生抽 适量','醋 适量','白糖 适量','香油 适量'],['鸡胸肉冷水下锅加姜片煮 15 分钟，晾凉后撕成细丝。','黄瓜、胡萝卜切细丝。','面条煮熟后过凉开水，拌少许香油防粘。','芝麻酱用温水一点点调开，加生抽、醋、少许糖调成酱汁。','面上放鸡丝和菜丝，淋酱汁拌匀。'],'酱汁单独装，吃前再拌；天冷时面条过温水，做成温拌面。')),
+S('other',D('o01','猪肉白菜水饺','staple','🥟',40,['饺子皮 15 张','猪肉末 80 克','大白菜 100 克','葱 5 克','姜 3 克','生抽 适量','盐 适量','香油 适量'],['白菜剁碎，撒少许盐腌 10 分钟，挤干水分。','肉末加葱姜末、生抽、盐顺一个方向搅上劲，再拌入白菜和香油。','取饺子皮放馅，对折捏紧边。','水开下饺子，煮开后点一次凉水，再开后饺子都浮起、鼓起就熟了。'],'周末多包一些冷冻，送饭当天直接煮，15 分钟就好。')),
+S('other',D('o02','猪肉大葱包子','staple','🥮',120,['面粉 100 克','酵母 1 克','猪肉末 80 克','葱 20 克','姜 3 克','生抽 适量','盐 适量','香油 适量'],['面粉加酵母和约 55 毫升温水揉成光滑面团，发酵到两倍大。','肉末加姜末、生抽、盐搅上劲，拌入葱花和香油。','面团揉匀排气，分成 4 个剂子擀成圆皮，包入馅料捏褶。','醒 15 分钟，冷水上锅，水开后蒸 15 分钟，关火焖 3 分钟。'],'周末蒸好冷冻，早上直接蒸 15 分钟。')),
+S('other',D('o03','葱油饼','staple','🫓',30,['面粉 100 克','葱 15 克','盐 适量','食用油 适量'],['面粉加约 60 毫升温热水揉成软面团，醒 20 分钟。','擀成薄片，刷油，撒盐和葱花。','从一边卷起成条，再盘成圆饼，按扁擀薄。','平底锅少油，中小火两面各烙 3 分钟到金黄起层。'])),
+S('other',D('o04','蛋炒饭','staple','🍛',15,['隔夜米饭 200 克','鸡蛋 1 个','火腿 30 克','胡萝卜 20 克','青豆 20 克','葱 3 克','盐 适量','食用油 适量'],['胡萝卜、火腿切小丁，青豆焯水；隔夜米饭打散。','鸡蛋打散炒成小块盛出。','少油炒胡萝卜丁和青豆 1 分钟，下火腿丁。','倒入米饭大火翻炒到粒粒分开，加鸡蛋和盐翻匀。','撒葱花出锅。'],'用隔夜米饭更好炒；可以配一个汤一起送。')),
+S('other',D('o05','鲜肉小馄饨','staple','🍥',25,['馄饨皮 15 张','猪肉末 60 克','紫菜 2 克','虾皮 3 克','葱 3 克','姜 2 克','生抽 适量','盐 适量','香油 适量'],['肉末加姜末、生抽、盐和一点水，顺一个方向搅上劲。','馄饨皮放一点馅，随手一捏就行。','碗里放紫菜、虾皮、少许盐和香油。','水开下馄饨，浮起后再煮 1 分钟，连汤盛进碗里，撒葱花。'],'汤和馄饨分开装，到了再合，皮不会泡烂。')),
+S('other',D('z03','葱油花卷','staple','🥯',80,['面粉 100 克','酵母 1 克','葱 10 克','盐 适量','食用油 适量'],['面粉加酵母和约 55 毫升温水揉成光滑面团，发酵到两倍大。','擀成薄片，刷油、撒盐和葱花，卷起切段。','两段叠在一起，用筷子压一下拧成花卷。','醒 15 分钟，冷水上锅，水开后蒸 15 分钟，关火焖 3 分钟。'],'可以周末多做一些冷冻，早上直接蒸。')),
+];
+const CATS={meat:{name:'荤菜',emoji:'🍖'},veg:{name:'素菜',emoji:'🥬'},soup:{name:'汤',emoji:'🍲'},fruit:{name:'水果',emoji:'🍎'},staple:{name:'主食',emoji:'🍚'}};
+const ALLC=Object.keys(CATS);
+const SLOT={
+  rice:{label:'米饭',acc:['staple'],sub:'rice'},noodle:{label:'面条',acc:['staple'],sub:'noodle'},ostaple:{label:'主食',acc:['staple'],sub:'other'},staple:{label:'主食',acc:['staple']},
+  meat:{label:'荤菜',acc:['meat']},veg:{label:'素菜',acc:['veg']},dish:{label:'荤素随意',acc:['meat','veg']},side:{label:'配菜/小菜',acc:['meat','veg']},
+  soup:{label:'汤',acc:['soup']},fruit:{label:'水果',acc:['fruit']},extra:{label:'加菜',acc:ALLC}};
+const SUBS={rice:'米饭',noodle:'面条',other:'其他主食'};
+const subOf=d=>d.sub||(d.cat==='staple'?'other':null);
+function slotAccepts(t,d){const S=SLOT[t]||SLOT.extra;return S.acc.includes(d.cat)&&(!S.sub||subOf(d)===S.sub)}
+// 午餐类型：每种类型一套默认格子（opt=可选格，空着也行）
+const MEALS={
+  rice:{name:'米饭炒菜',emoji:'🍚',desc:'米饭 + 荤 + 素 + 汤 + 水果'},
+  noodle:{name:'面条',emoji:'🍜',desc:'一碗面 + 小菜/汤可选 + 水果'},
+  other:{name:'其他',emoji:'✨',desc:'饺子、包子、饼… 自由加'}};
+const MEAL_IDS=Object.keys(MEALS);
+function defaultTemplates(){return{
+  rice:[{type:'rice',dishId:'z01'},{type:'meat'},{type:'veg'},{type:'soup'},{type:'fruit'}],
+  noodle:[{type:'noodle'},{type:'side',opt:true},{type:'soup',opt:true},{type:'fruit'}],
+  other:[{type:'ostaple'},{type:'side',opt:true},{type:'soup',opt:true},{type:'fruit',opt:true}]}}
+const mealOf=o=>(o&&MEALS[o.mealType])?o.mealType:'rice'; // 旧数据没有 mealType 视为米饭炒菜
+const tplOf=mt=>state.settings.mealTemplates[mt]||defaultTemplates()[mt];
+function mealTag(mt){const m=MEALS[mt];return`<span class="tag c-meal-${mt}">${m.emoji} ${m.name}</span>`}
+
+/* ========== 数据（只存在本机 localStorage） ========== */
+const KEY='lunchOrder.v1';
+function defaultState(){return{
+  schema:1,
+  settings:{deadline:'08:30',mealTemplates:defaultTemplates()},
+  // 预留：多家人。第一版只用固定的 cook。
+  members:[{id:'kid',name:'小朋友',role:'child'},{id:'m1',name:'家人',role:'cook'}],
+  customDishes:[],
+  // orders[YYYY-MM-DD] = {date,mealType:'rice'|'noodle'|'other',slots:[{id,type,dishId,opt}],status:'draft'|'submitted',source,createdBy,assignee,feedback:[],updatedAt}
+  // feedback 预留：[{from,text,replaceSlotId,replaceDishId,status,ts}]（换菜反馈，第一版无界面）
+  orders:{},
+  photos:[], // {id,date,dishId,data,ts,by}  单道菜成品图
+  mealPhotos:{}, // {'YYYY-MM-DD':{data,ts,by,w,h}}  整餐成品图，每天一张
+  shopping:{}, // shopping[scope][itemKey]=true
+  prefs:{mode:'kid'}
+}}
+let state;
+try{state=Object.assign(defaultState(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){state=defaultState()}
+/* ---------- 主题 ---------- */
+// 原创简约小猫（非任何商业形象）：宽脸、弯弯笑眼、ω 嘴、腮红、颈下领结
+const SVG={
+ cat:`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M18 40 14 10 40 26M82 40 86 10 60 26" fill="#fff" stroke="#5a2238" stroke-width="3" stroke-linejoin="round"/><path d="M20 30 18 16 32 25M80 30 82 16 68 25" fill="#ffb3c9"/><ellipse cx="50" cy="52" rx="38" ry="31" fill="#fff" stroke="#5a2238" stroke-width="3"/><path d="M30 50q6-7 12 0M58 50q6-7 12 0" fill="none" stroke="#5a2238" stroke-width="3.2" stroke-linecap="round"/><ellipse cx="27" cy="62" rx="7" ry="4.5" fill="#ffb3c9"/><ellipse cx="73" cy="62" rx="7" ry="4.5" fill="#ffb3c9"/><path d="M46 57h8l-4 4z" fill="#f06292"/><path d="M43 64q3.5 4 7 0q3.5 4 7 0" fill="none" stroke="#5a2238" stroke-width="2.4" stroke-linecap="round"/><path d="M6 54h12M7 62l11-3M94 54H82M93 62l-11-3" stroke="#5a2238" stroke-width="2" stroke-linecap="round"/><path d="M50 86 36 78v16zM50 86l14-8v16z" fill="#e8364f"/><circle cx="50" cy="86" r="4.5" fill="#c4213a"/></svg>`,
+ bow:`<svg viewBox="0 0 34 22" aria-hidden="true"><path d="M17 11 3 3c-3 2-3 14 0 16zM17 11l14-8c3 2 3 14 0 16z" fill="#e8364f"/><circle cx="17" cy="11" r="4" fill="#c4213a"/></svg>`,
+ paw:`<svg viewBox="0 0 40 40" aria-hidden="true"><g fill="#f48fb1"><ellipse cx="20" cy="27" rx="9" ry="7.5"/><circle cx="9" cy="16" r="4"/><circle cx="16" cy="10" r="4"/><circle cx="24" cy="10" r="4"/><circle cx="31" cy="16" r="4"/></g></svg>`,
+ heart:`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 34 6 21C0 13 9 3 20 12 31 3 40 13 34 21z" fill="#f06292"/></svg>`
+};
+const THEMES={
+ default:{name:'默认暖橙',emoji:'🍊',color:'#e8661a',pv:'linear-gradient(135deg,#e8661a,#e0741a)',desc:'原来的样子'},
+ kitty:{name:'粉色小猫咪',emoji:'🎀',color:'#ffc2d6',pv:'linear-gradient(135deg,#ffe1ec,#ffc2d6)',desc:'白+粉、蝴蝶结、小猫爪'},
+ mint:{name:'清新绿',emoji:'🌿',color:'#1b7a5c',pv:'linear-gradient(135deg,#1b7a5c,#1f6f99)',desc:'清清爽爽的绿色'}
+};
+function curTheme(){return (state&&state.settings&&THEMES[state.settings.theme])?state.settings.theme:'default'}
+function applyTheme(){const t=curTheme();document.documentElement.dataset.theme=t;
+  const mc=document.querySelector('meta[name=theme-color]');if(mc)mc.content=THEMES[t].color;
+  const img=state.settings.themeImg;const b=$('#brand');if(b)b.innerHTML=img?`<img src="${img}" alt="我的头像">`:(t==='kitty'?SVG.cat:t==='mint'?'🌿':'🍱')}
+function eIco(e){return curTheme()==='kitty'?SVG.cat:e}
+function themeCards(){const t=curTheme();return`<div class="themes">${Object.keys(THEMES).map(k=>{const T=THEMES[k];return`<button class="thc ${k===t?'on':''}" data-act="settheme" data-theme="${k}"><div class="pv" style="background:${T.pv}">${k==='kitty'?SVG.cat+SVG.bow:k==='mint'?'🌿🥦':'🍱🍊'}</div><b>${T.emoji} ${T.name}${k===t?' ✔':''}</b><i>${T.desc}</i></button>`}).join('')}</div>`}
+function compressSquare(file,n){return new Promise((res,rej)=>{const url=URL.createObjectURL(file);const img=new Image();
+  img.onload=()=>{const s=Math.min(img.naturalWidth,img.naturalHeight);const c=document.createElement('canvas');c.width=c.height=n;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,n,n);g.drawImage(img,(img.naturalWidth-s)/2,(img.naturalHeight-s)/2,s,s,0,0,n,n);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',0.8))};
+  img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('这张图片读不了，换一张试试'))};img.src=url})}
+async function onThemeImg(inp){const f=inp.files[0];inp.value='';if(!f)return;try{const d=await compressSquare(f,160);const old=state.settings.themeImg;state.settings.themeImg=d;if(!save()){state.settings.themeImg=old;return}render();toast('🖼️ 主题图片已换好')}catch(e){toast('⚠️ '+e.message)}}
+function normalize(st){st.settings=Object.assign({deadline:'08:30'},st.settings||{});if(!st.settings.mealTemplates)st.settings.mealTemplates=defaultTemplates();MEAL_IDS.forEach(k=>{if(!Array.isArray(st.settings.mealTemplates[k]))st.settings.mealTemplates[k]=defaultTemplates()[k]});delete st.settings.slotTemplate;if(!THEMES[st.settings.theme])st.settings.theme='default';if(typeof st.settings.themeImg!=='string'||!/^data:image\//.test(st.settings.themeImg))st.settings.themeImg='';if(!Array.isArray(st.photos))st.photos=[];const mp={};if(st.mealPhotos&&typeof st.mealPhotos==='object'&&!Array.isArray(st.mealPhotos))Object.keys(st.mealPhotos).forEach(k=>{const v=st.mealPhotos[k];if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&v&&typeof v.data==='string'&&/^data:image\/(jpeg|png|webp);base64,/.test(v.data))mp[k]={data:v.data,ts:+v.ts||0,by:v.by||'m1',w:+v.w||0,h:+v.h||0}});st.mealPhotos=mp;st.prefs=st.prefs||{mode:'kid'};return st}
+normalize(state);
+try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch(e){toast('⚠️ 存储空间满了，请到家人端「设置」导出备份后删除一些成品图');return false}}
+
+/* ========== 工具 ========== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const pd=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return ymd(d)};
+const today=()=>ymd(new Date());
+const WD=['周日','周一','周二','周三','周四','周五','周六'];
+const isWeekday=s=>{const w=pd(s).getDay();return w>=1&&w<=5};
+const md=s=>{const d=pd(s);return`${d.getMonth()+1}月${d.getDate()}日`};
+const label=s=>{const t=today();const rel=s===t?'今天':s===addDays(t,1)?'明天':s===addDays(t,-1)?'昨天':'';return`${md(s)} ${WD[pd(s).getDay()]}${rel?'（'+rel+'）':''}`};
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function deadlineOf(s){const[h,m]=state.settings.deadline.split(':').map(Number);const d=pd(s);d.setHours(h,m,0,0);return d}
+const isLocked=s=>Date.now()>=deadlineOf(s).getTime();
+function nextWorkday(s){let x=addDays(s,1);while(!isWeekday(x))x=addDays(x,1);return x}
+function weekStart(s){const d=pd(s),w=d.getDay();if(w===0)return addDays(s,1);if(w===6)return addDays(s,2);return addDays(s,1-w)}
+const weekDays=s=>{const m=weekStart(s);return[0,1,2,3,4].map(i=>addDays(m,i))};
+function allDishes(){return PRESET.concat(state.customDishes)}
+function dish(id){return allDishes().find(d=>d.id===id)}
+const ord=s=>state.orders[s];
+const hasDishes=o=>!!(o&&o.slots.some(x=>x.dishId));
+function defaultDate(){const t=today();if(isWeekday(t)&&!isLocked(t)&&!hasDishes(ord(t)))return t;return nextWorkday(t)}
+function fmtQ(n){return Math.round(n*10)/10}
+function newOrder(s,mt,tpl){mt=MEALS[mt]?mt:'rice';return{date:s,mealType:mt,slots:(tpl||tplOf(mt)).map(t=>({id:uid('s'),type:t.type,dishId:t.dishId||null,opt:!!t.opt})),status:'draft',source:'manual',createdBy:'kid',assignee:'m1',feedback:[],updatedAt:Date.now()}}
+function ensureOrder(s){if(!state.orders[s])state.orders[s]=newOrder(s,'rice');return state.orders[s]}
+function lastOrderBefore(s){return Object.keys(state.orders).filter(d=>d<s&&hasDishes(state.orders[d])).sort().pop()}
+function copyOrder(from,to,source,by){const o=state.orders[from];state.orders[to]={...newOrder(to,mealOf(o),[]),slots:o.slots.filter(x=>x.dishId||x.opt).map(x=>({id:uid('s'),type:x.type,dishId:x.dishId,opt:!!x.opt})),status:'submitted',source,createdBy:by||'kid'};}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2200)}
+function catTag(c){return`<span class="tag c-${c}">${CATS[c]?CATS[c].name:c}</span>`}
+function slotLabel(t){return(SLOT[t]||SLOT.extra).label}
+
+/* ========== UI 状态 ========== */
+const ui={tab:{kid:'order',fam:'orders'},date:defaultDate(),picker:null,proposal:null,famRange:'today',rndType:null,rndNoodle:1,rndOther:0,tplType:'rice',shopRange:'today',form:null,poolCat:'all'};
+const KID_TABS=[{id:'order',emoji:'🍱',name:'点餐'},{id:'history',emoji:'📜',name:'历史'},{id:'random',emoji:'🎲',name:'随机'},{id:'add',emoji:'➕',name:'加菜'}];
+const FAM_TABS=[{id:'orders',emoji:'📋',name:'点单'},{id:'shop',emoji:'🛒',name:'食材清单'},{id:'settings',emoji:'⚙️',name:'设置'}];
+
+function render(){
+  const m=state.prefs.mode==='fam'?'fam':'kid';
+  document.body.dataset.mode=m;
+  applyTheme();
+  $('#modeBtn').textContent=m==='kid'?'👨‍👩‍👧 家人端':'🧒 孩子端';
+  const tabs=m==='kid'?KID_TABS:FAM_TABS;
+  if(!tabs.find(t=>t.id===ui.tab[m]))ui.tab[m]=tabs[0].id;
+  $('#nav').innerHTML=tabs.map(t=>`<button class="tab ${t.id===ui.tab[m]?'on':''}" data-act="tab" data-tab="${t.id}"><span>${t.emoji}</span>${t.name}</button>`).join('');
+  $('#view').innerHTML=VIEWS[ui.tab[m]]();
+  tick();
+}
+
+/* ---------- 孩子端：点餐 ---------- */
+function dateChips(){
+  const t=today();let s=isWeekday(t)?t:nextWorkday(t);const arr=[];
+  while(arr.length<8){arr.push(s);s=nextWorkday(s)}
+  if(!arr.includes(ui.date))arr.unshift(ui.date);
+  return`<div class="dates">${arr.map(d=>{const o=ord(d),lk=isLocked(d);const st=hasDishes(o)?(MEALS[mealOf(o)].emoji+(o.status==='submitted'?' 已点':' 草稿')):(lk?'🔒 已截止':'⬜ 未点');
+    return`<button class="date ${d===ui.date?'on':''} ${lk?'lock':''}" data-act="date" data-d="${d}"><i>${WD[pd(d).getDay()]}${d===t?' · 今天':d===addDays(t,1)?' · 明天':''}</i><b>${pd(d).getMonth()+1}/${pd(d).getDate()}</b><span class="st">${st}</span></button>`}).join('')}</div>`;
+}
+function mealSeg(cur,act,extra,disabled){return`<div class="meals">${MEAL_IDS.map(k=>`<button class="meal ${cur===k?'on':''}" data-act="${act}" data-t="${k}" ${extra||''} ${disabled?'disabled':''}><span>${MEALS[k].emoji}</span><b>${MEALS[k].name}</b><i>${MEALS[k].desc}</i></button>`).join('')}</div>`}
+function vOrder(){
+  const s=ui.date,o=ord(s),lk=isLocked(s),mt=mealOf(o);
+  const slots=o?o.slots:tplOf('rice').map(t=>({type:t.type,dishId:t.dishId||null,opt:!!t.opt}));
+  const remind=(()=>{const t=today();let x=isWeekday(t)?t:nextWorkday(t);for(let i=0;i<2;i++){if(!isLocked(x)&&!hasDishes(ord(x))&&x!==s)return`<div class="banner info">🔔 ${label(x)} 还没点餐哦，截止 ${md(x)} ${state.settings.deadline}</div>`;x=nextWorkday(x)}return''})();
+  return dateChips()+remind+`<div id="dl"></div>
+  <h3 style="margin:14px 0 8px">中午吃哪一种？</h3>${mealSeg(mt,'meal','',lk)}
+  <div class="slots">${slots.map((x,i)=>{const d=x.dishId&&dish(x.dishId);const t=x.type;const S=SLOT[t]||SLOT.extra;const cc=S.acc.length===1?S.acc[0]:t;
+    return`<div class="slot ${d?'full':''} ${x.opt&&!d?'opt':''}" ${lk?'':`data-act="pick" data-i="${i}"`} role="button">
+      <span class="lab c-${cc}">${slotLabel(t)}${x.opt?' · 可选':''}</span>
+      ${!lk&&o?`<button class="x" data-act="rmslot" data-i="${i}" title="去掉这个格子">✕</button>`:''}
+      ${d?`<div class="emo">${d.emoji}</div><div class="nm">${esc(d.name)}</div><button class="rd" data-act="detail" data-id="${d.id}" title="看做法">📖 做法</button>`:`<div class="plus">＋</div><div class="tip">${lk?'没点':x.opt?'想要就点我':'点我选'}</div>`}
+    </div>`}).join('')}</div>
+  ${mealPhotoBox(s,false)}
+  ${lk?(hasDishes(o)?'':'<div class="empty"><div class="e">'+eIco('🍽️')+'</div>这天没点餐，家人会帮你安排</div>'):`
+  <div class="row" style="margin-top:14px">
+    <button class="btn" data-act="addslot">➕ 再加一个菜</button>
+    <button class="btn" data-act="repeatlast">🔁 和上次一样</button>
+    <button class="btn" data-act="goto" data-tab="random">🎲 随机来一份</button>
+    ${o?'<button class="btn ghost" data-act="resetslots">↩️ 清空重来</button>':''}
+  </div>
+  <button class="btn pri big" data-act="submit">✅ 就吃这些，告诉家人！</button>`}`;
+}
+// 切换午餐类型：按新类型的默认格子重排，已选的菜尽量放进能放的格子；放不下的非主食保留为加菜，放不下的主食去掉
+function remapMeal(o,mt){
+  const n=newOrder(o.date,mt);const dropped=[];
+  const old=o.slots.filter(x=>x.dishId).map(x=>({...x,d:dish(x.dishId)})).filter(x=>x.d);
+  const hasStaple=old.some(x=>x.d.cat==='staple'&&n.slots.some(y=>(SLOT[y.type]||{}).sub&&slotAccepts(y.type,x.d)));
+  if(hasStaple)n.slots.forEach(y=>{if(y.dishId&&(SLOT[y.type]||{}).sub)y.dishId=null}); // 自己选过的主食优先于默认米饭
+  old.forEach(x=>{if(n.slots.some(y=>y.dishId===x.dishId))return;
+    const sl=n.slots.find(y=>!y.dishId&&slotAccepts(y.type,x.d));
+    if(sl){sl.dishId=x.dishId;return}
+    if(x.d.cat==='staple'){dropped.push(x.d.name);return}
+    n.slots.push({id:uid('s'),type:(SLOT[x.type]&&!SLOT[x.type].sub)?x.type:x.d.cat,dishId:x.dishId,opt:false})});
+  o.mealType=mt;o.slots=n.slots;o.updatedAt=Date.now();return dropped;
+}
+function setMeal(s,mt){
+  const o=ord(s);
+  if(!o){state.orders[s]=newOrder(s,mt);save();render();toast(`${MEALS[mt].emoji} 今天吃${MEALS[mt].name}`);return}
+  if(mealOf(o)===mt&&o.mealType)return;
+  const chosen=o.slots.filter(x=>x.dishId&&!(x.type==='rice'&&x.dishId==='z01'));
+  if(chosen.length&&!confirm(`换成「${MEALS[mt].name}」吗？格子会调整，已经选的菜会尽量保留。`))return;
+  const dropped=remapMeal(o,mt);save();render();
+  toast(dropped.length?`已换成${MEALS[mt].name}，「${dropped.join('、')}」不适合，去掉了`:`${MEALS[mt].emoji} 已换成${MEALS[mt].name}`);
+}
+function tick(){
+  const el=$('#dl');if(!el)return;
+  const s=ui.date,o=ord(s),diff=deadlineOf(s).getTime()-Date.now();
+  if(diff<=0){el.innerHTML=`<div class="banner lock">🔒 ${label(s)} 的点餐已截止（每天 ${state.settings.deadline} 截止）</div>`;if(!el.dataset.locked){el.dataset.locked=1;if(el.dataset.was==='open')render()}return}
+  el.dataset.was='open';
+  const sec=Math.floor(diff/1000),d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60),ss=sec%60;
+  const txt=(d?d+'天':'')+(d||h?h+'小时':'')+m+'分'+pad(ss)+'秒';
+  const st=hasDishes(o)?(o.status==='submitted'?'✅ 已经告诉家人啦，截止前还能改':'📝 已保存草稿，记得点下面的大按钮告诉家人'):'还没点哦';
+  el.innerHTML=`<div class="banner ${diff<3600e3?'warn':'ok'}">⏳ ${label(s)} · 距离截止还有 <span class="cd">${txt}</span><span style="font-weight:500">${st}</span></div>`;
+}
+setInterval(tick,1000);
+
+function openPicker(i,addType){
+  const o=ord(ui.date);const t=addType||(o?o.slots[i].type:tplOf('rice')[i].type);
+  const S=SLOT[t]||SLOT.extra;
+  ui.picker={i,addType,q:'',acc:S.acc,cat:S.acc.length===1?S.acc[0]:'all',sub:S.sub||'all'};
+  renderPicker();
+}
+function renderPicker(){
+  const p=ui.picker;const cats=['all',...ALLC];
+  showModal(`<div class="mhead"><h2>选一个菜</h2><button class="close" data-act="close">✕</button></div>
+  <input class="search" id="q" placeholder="🔍 搜菜名，比如：鸡蛋" value="${esc(p.q)}" autocomplete="off">
+  <div class="cats">${cats.map(c=>`<button class="${p.cat===c?'on':''}" data-act="pcat" data-c="${c}">${c==='all'?'全部':CATS[c].emoji+' '+CATS[c].name}</button>`).join('')}</div>
+  ${p.cat==='staple'?`<div class="cats subs">${['all','rice','noodle','other'].map(k=>`<button class="${p.sub===k?'on':''}" data-act="psub" data-s="${k}">${k==='all'?'全部主食':k==='rice'?'🍚 米饭':k==='noodle'?'🍜 面条':'✨ 饺子包子饼'}</button>`).join('')}</div>`:''}
+  <div id="plist"></div>
+  <p class="muted">没有想吃的？去「➕ 加菜」自己添加一个～</p>`);
+  renderPList();
+  document.querySelectorAll('#mbox .cats button.on').forEach(b=>{const c=b.parentElement;c.scrollLeft=b.offsetLeft-c.offsetLeft-(c.clientWidth-b.offsetWidth)/2});
+  const q=$('#q');q.oninput=()=>{p.q=q.value.trim();renderPList()};
+}
+function renderPList(){
+  const p=ui.picker;const cnt=poolCounts();
+  const list=allDishes().filter(d=>!d.deleted&&(p.cat==='all'||d.cat===p.cat)&&(p.cat!=='staple'||p.sub==='all'||subOf(d)===p.sub)&&(!p.q||d.name.includes(p.q)||d.ings.some(x=>x.name.includes(p.q))));
+  $('#plist').innerHTML=list.length?`<div class="dgrid">${list.map(d=>`<button class="dcard" data-act="choose" data-id="${d.id}">${cnt[d.id]?`<span class="cnt">吃过${cnt[d.id]}次</span>`:''}<div class="emo">${d.emoji}</div><div class="nm">${esc(d.name)}</div><div class="mt">${d.cat==='staple'?SUBS[subOf(d)]:CATS[d.cat].name} · ${d.mins}分钟</div></button>`).join('')}</div>`:'<div class="empty"><div class="e">'+eIco('🤔')+'</div>没找到这个菜</div>';
+}
+function chooseDish(id){
+  const p=ui.picker,s=ui.date;const o=ensureOrder(s);const d=dish(id);
+  if(p.addType){o.slots.push({id:uid('s'),type:p.addType,dishId:id,opt:false})}
+  else{const sl=o.slots[p.i];sl.dishId=id;if(!slotAccepts(sl.type,d)){sl.type=d.cat;sl.opt=false}}
+  o.updatedAt=Date.now();save();closeModal();render();toast(`${d.emoji} ${d.name} 选好啦`);
+}
+function addToDate(id,s){
+  if(isLocked(s)){toast('🔒 这天已经截止啦');return false}
+  const o=ensureOrder(s),d=dish(id);
+  if(d.cat==='staple'){const want=subOf(d)==='rice'?'rice':subOf(d)==='noodle'?'noodle':'other';if(mealOf(o)!==want)remapMeal(o,want)}
+  const sl=o.slots.find(x=>!x.dishId&&slotAccepts(x.type,d))||(d.cat==='staple'?o.slots.find(x=>slotAccepts(x.type,d)):null);
+  if(sl)sl.dishId=id;else o.slots.push({id:uid('s'),type:d.cat,dishId:id,opt:false});
+  o.updatedAt=Date.now();save();toast(`已把 ${d.emoji}${d.name} 加到 ${md(s)}`);return true;
+}
+
+/* ---------- 历史 ---------- */
+function poolCounts(){const c={};Object.values(state.orders).forEach(o=>o.slots.forEach(x=>{if(x.dishId)c[x.dishId]=(c[x.dishId]||0)+1}));state.photos.forEach(p=>{if(!c[p.dishId])c[p.dishId]=1});return c}
+function poolIds(){return Object.keys(poolCounts()).filter(id=>dish(id)&&!dish(id).deleted)}
+function vHistory(){
+  const ds=Object.keys(state.orders).filter(d=>hasDishes(state.orders[d])).sort().reverse();
+  const cnt=poolCounts();let pool=poolIds().map(dish);
+  if(ui.poolCat!=='all')pool=pool.filter(d=>d.cat===ui.poolCat);
+  pool.sort((a,b)=>cnt[b.id]-cnt[a.id]);
+  return`<div class="banner info" style="margin-top:16px">📅 「再点一次」会复制到你在点餐页选的日子：<b>${label(ui.date)}</b> <button class="btn sm" data-act="goto" data-tab="order">换日子</button></div>
+  <h2>🍽️ 历史菜品池 <span class="muted">吃过/做过的菜，点一下可以再点一次</span></h2>
+  <div class="cats">${['all',...ALLC].map(c=>`<button class="${ui.poolCat===c?'on':''}" data-act="poolcat" data-c="${c}">${c==='all'?'全部':CATS[c].emoji+' '+CATS[c].name}</button>`).join('')}</div>
+  ${pool.length?`<div class="dgrid">${pool.map(d=>`<button class="dcard" data-act="detail" data-id="${d.id}" data-add="1"><span class="cnt">${cnt[d.id]}次</span><div class="emo">${d.emoji}</div><div class="nm">${esc(d.name)}</div><div class="mt">${d.cat==='staple'?SUBS[subOf(d)]:CATS[d.cat].name}</div></button>`).join('')}</div>`:'<div class="empty card"><div class="e">'+eIco('🫙')+'</div>池子还是空的，点过的菜会自动放进来</div>'}
+  <h2>📜 历史点单</h2>
+  ${ds.length?ds.map(d=>{const o=state.orders[d];return`<div class="card hitem"><div class="d">${label(d)}<br>${mealTag(mealOf(o))}</div><div class="emos">${o.slots.filter(x=>x.dishId&&dish(x.dishId)).map(x=>{const di=dish(x.dishId);return`<span>${di.emoji} ${esc(di.name)}</span>`}).join('')}</div>${mpThumb(d)}<button class="btn pri sm" data-act="reorder" data-d="${d}">🔁 再点一次</button></div>`}).join(''):'<div class="empty card"><div class="e">'+eIco('📭')+'</div>还没有点过餐</div>'}`;
+}
+function reorder(from){
+  const to=ui.date;
+  if(from===to){toast('这就是你选的日子哦，先去点餐页换个日子');return}
+  if(isLocked(to)){toast('🔒 '+md(to)+' 已经截止啦');return}
+  if(hasDishes(ord(to))&&!confirm(`${label(to)} 已经点过了，要换成 ${md(from)} 的${MEALS[mealOf(ord(from))].name}吗？`))return;
+  copyOrder(from,to,'repeat');save();ui.tab.kid='order';render();toast(`🔁 已复制到 ${label(to)}`);
+}
+
+/* ---------- 随机 ---------- */
+function pickRandom(type,dayUsed,weekUsed){
+  const ok=d=>slotAccepts(type,d);
+  const pool=poolIds().map(dish).filter(ok);
+  const pre=allDishes().filter(d=>!d.deleted&&ok(d));
+  const noDay=d=>!dayUsed.has(d.id),noWeek=d=>type==='fruit'||type==='rice'||!weekUsed.has(d.id);
+  const tiers=[pool.filter(d=>noDay(d)&&noWeek(d)),pre.filter(d=>noDay(d)&&noWeek(d)),pool.filter(noDay),pre.filter(noDay),pre];
+  const inPool=new Set(pool.map(d=>d.id));
+  for(const t of tiers)if(t.length){const d=t[Math.floor(Math.random()*t.length)];return{dishId:d.id,fromPool:inPool.has(d.id)}}
+  return{dishId:null,fromPool:false};
+}
+// 按午餐类型的默认格子配餐；可选格子一半概率留空（结果里可以点🔄补上）
+function genDay(s,weekUsed,mt){
+  const used=new Set();
+  return{date:s,mealType:mt,slots:tplOf(mt).map(t=>{
+    if(t.opt&&Math.random()<0.5)return{type:t.type,opt:true,dishId:null,fromPool:true};
+    const r=pickRandom(t.type,used,weekUsed);used.add(r.dishId);weekUsed.add(r.dishId);return{type:t.type,opt:!!t.opt,...r}})};
+}
+function weekMealPlan(){ // 随机挑出面条日/其他日，其余米饭炒菜
+  const idx=[0,1,2,3,4].sort(()=>Math.random()-.5);const plan=Array(5).fill('rice');
+  idx.slice(0,ui.rndNoodle).forEach(i=>plan[i]='noodle');
+  idx.slice(ui.rndNoodle,ui.rndNoodle+ui.rndOther).forEach(i=>plan[i]='other');
+  return plan;
+}
+function vRandom(){
+  const p=ui.proposal;const ws=weekDays(ui.date);
+  if(!ui.rndType)ui.rndType=mealOf(ord(ui.date));
+  const sel=(id,v,max)=>`<select class="in" id="${id}" style="width:auto;display:inline-block;padding:6px 10px">${Array.from({length:max+1},(_,i)=>`<option value="${i}" ${v===i?'selected':''}>${i} 天</option>`).join('')}</select>`;
+  return`<div class="card" style="margin-top:16px">
+    <div style="font-size:48px;text-align:center">🎲</div>
+    <p class="muted" style="margin:4px 0 12px;text-align:center">从「历史菜品池」里按午餐类型的格子随机配餐；池子里某类菜不够时，从菜单里补（标「新」）。</p>
+    <h3>随机来一天（${label(ui.date)}）</h3>
+    ${mealSeg(ui.rndType,'rndtype')}
+    <button class="btn pri" style="margin-top:10px" data-act="rday">🎲 随机来一天</button>
+    <h3 style="margin-top:22px">随机来一周（${md(ws[0])}–${md(ws[4])}）</h3>
+    <div class="row"><label>🍜 面条日 ${sel('rn',ui.rndNoodle,3)}</label><label>✨ 其他日（饺子包子饼）${sel('ro',ui.rndOther,2)}</label><span class="muted">其余是米饭炒菜，哪天吃面随机定</span></div>
+    <button class="btn blue" style="margin-top:10px" data-act="rweek">🎲 随机来一周</button>
+  </div>
+  ${p?`<h2>🎁 随机结果 <span class="muted">不喜欢哪个就点 🔄 换一个，也可以换这天的类型</span></h2>
+  ${p.days.map((d,di)=>{const lk=isLocked(d.date);return`<div class="card rday"><div class="row" style="margin-bottom:8px"><b style="font-size:19px">${label(d.date)}</b>${mealTag(d.mealType)}${lk?'<span class="tag c-extra">已截止，不会保存</span>':hasDishes(ord(d.date))?'<span class="muted">（会替换已点的）</span>':''}<span style="flex:1"></span>
+      <span class="seg mini">${MEAL_IDS.map(k=>`<button class="${d.mealType===k?'on':''}" data-act="rdaytype" data-d="${di}" data-t="${k}">${MEALS[k].emoji}</button>`).join('')}</span>
+      <button class="btn sm" data-act="rerollday" data-d="${di}">🔄 整天重抽</button></div>
+    <div class="dgrid">${d.slots.map((x,i)=>{const ds=x.dishId&&dish(x.dishId);return`<div class="dcard ${!ds&&x.opt?'opt':''}"><div class="mt">${slotLabel(x.type)}${x.opt?' · 可选':''}</div><div class="emo">${ds?ds.emoji:x.opt?'➖':'❔'}</div><div class="nm">${ds?esc(ds.name):x.opt?'这次不要':'没有可选的菜'}${ds&&!x.fromPool?'<span class="new">新</span>':''}</div><div class="row" style="justify-content:center;gap:4px;margin-top:6px"><button class="btn sm" data-act="reroll" data-d="${di}" data-i="${i}">🔄 ${ds?'换一个':'来一个'}</button>${ds&&x.opt?`<button class="btn sm" data-act="rclear" data-d="${di}" data-i="${i}">✕</button>`:''}</div></div>`}).join('')}</div></div>`}).join('')}
+  <button class="btn green big" data-act="useproposal">✅ 就用这个！</button>`:''}`;
+}
+function useProposal(){
+  const p=ui.proposal;const ok=p.days.filter(d=>!isLocked(d.date));
+  if(!ok.length){toast('🔒 这些日子都截止了');return}
+  const over=ok.filter(d=>hasDishes(ord(d.date)));
+  if(over.length&&!confirm(`${over.map(d=>md(d.date)).join('、')} 已经点过了，要用随机结果替换吗？`))return;
+  ok.forEach(d=>{state.orders[d.date]={...newOrder(d.date,d.mealType,[]),slots:d.slots.filter(x=>x.dishId||x.opt).map(x=>({id:uid('s'),type:x.type,dishId:x.dishId,opt:!!x.opt})),status:'submitted',source:'random'}});
+  save();ui.proposal=null;ui.date=ok[0].date;ui.tab.kid='order';render();toast(`🎉 已保存 ${ok.length} 天的午餐`);
+}
+function regenDay(di,mt){const wk=new Set(ui.proposal.days.filter((_,i)=>i!==di).flatMap(dd=>dd.slots.map(y=>y.dishId)));ui.proposal.days[di]=genDay(ui.proposal.days[di].date,wk,mt||ui.proposal.days[di].mealType)}
+
+/* ---------- 加菜 ---------- */
+const EMOJIS=['🍲','🥘','🍳','🍗','🥩','🐟','🦐','🥚','🥬','🥦','🥕','🍆','🌽','🍄','🍜','🍝','🥟','🍚','🥯','🍎','🍓','🍉'];
+function blankForm(){return{name:'',cat:'meat',sub:'rice',emoji:'🍲',mins:20,ings:[{name:'',qty:'',unit:'克'},{name:'',qty:'',unit:'克'}],steps:''}}
+function readForm(){const f=ui.form;if(!$('#fname'))return f;f.name=$('#fname').value;f.cat=$('#fcat').value;f.sub=$('#fsub')?$('#fsub').value:f.sub||'rice';f.mins=$('#fmins').value;f.steps=$('#fsteps').value;
+  f.ings=[...document.querySelectorAll('.ingrow')].map(r=>({name:r.querySelector('.iname').value,qty:r.querySelector('.iqty').value,unit:r.querySelector('.iunit').value}));return f}
+function vAdd(){
+  if(!ui.form)ui.form=blankForm();const f=ui.form;
+  const mine=state.customDishes.filter(d=>!d.deleted);
+  return`<div class="row" style="margin-top:16px">
+    <button class="btn soon" data-act="soon" data-what="语音输入">🎤 说出来加菜</button>
+    <button class="btn soon" data-act="soon" data-what="拍图识菜">📷 上传图片变菜谱</button>
+    <span class="muted">（这两个下一版开放）</span></div>
+  <div class="card" style="margin-top:14px"><h2 style="margin-top:0">✍️ 自己加一个菜</h2>
+    <div class="field"><label>菜名 *</label><input class="in" id="fname" value="${esc(f.name)}" placeholder="比如：番茄牛腩"></div>
+    <div class="row">
+      <div class="field" style="flex:1;min-width:140px"><label>分类</label><select class="in" id="fcat">${ALLC.map(c=>`<option value="${c}" ${f.cat===c?'selected':''}>${CATS[c].emoji} ${CATS[c].name}</option>`).join('')}</select></div>
+      ${f.cat==='staple'?`<div class="field" style="flex:1;min-width:140px"><label>主食类型</label><select class="in" id="fsub">${['rice','noodle','other'].map(k=>`<option value="${k}" ${f.sub===k?'selected':''}>${SUBS[k]}</option>`).join('')}</select></div>`:''}
+      <div class="field" style="flex:1;min-width:140px"><label>大概要几分钟</label><input class="in" id="fmins" type="number" min="1" value="${esc(f.mins)}"></div>
+    </div>
+    <div class="field"><label>选个图标</label><div class="emopick">${EMOJIS.map(e=>`<button class="${f.emoji===e?'on':''}" data-act="emo" data-e="${e}">${e}</button>`).join('')}</div></div>
+    <div class="field"><label>食材（一人份，用量填数字，调料可以只写「适量」）</label>
+      ${f.ings.map((x,i)=>`<div class="ingrow"><input class="in iname" placeholder="食材，如 牛腩" value="${esc(x.name)}"><input class="in iqty" placeholder="用量" inputmode="decimal" value="${esc(x.qty)}"><input class="in iunit" placeholder="单位" value="${esc(x.unit)}" list="units"><button class="btn sm" data-act="rming" data-i="${i}">✕</button></div>`).join('')}
+      <datalist id="units"><option>克</option><option>个</option><option>根</option><option>瓣</option><option>毫升</option><option>张</option><option>适量</option></datalist>
+      <button class="btn sm" data-act="adding">＋ 再加一种食材</button></div>
+    <div class="field"><label>做法（一行一步）</label><textarea class="in" id="fsteps" placeholder="第一步……&#10;第二步……">${esc(f.steps)}</textarea></div>
+    <button class="btn pri big" data-act="savedish">💾 保存到菜单</button>
+  </div>
+  <h2>⭐ 我加的菜（${mine.length}）</h2>
+  ${mine.length?`<div class="dgrid">${mine.map(d=>`<div class="dcard"><button data-act="detail" data-id="${d.id}" style="width:100%"><div class="emo">${d.emoji}</div><div class="nm">${esc(d.name)}</div><div class="mt">${d.cat==='staple'?SUBS[subOf(d)]:CATS[d.cat].name}</div></button><button class="btn sm" style="margin-top:6px" data-act="deldish" data-id="${d.id}">🗑 删除</button></div>`).join('')}</div>`:'<div class="empty card"><div class="e">'+eIco('🧑‍🍳')+'</div>还没有自己加的菜</div>'}`;
+}
+function saveDish(){
+  const f=readForm();const name=f.name.trim();
+  if(!name){toast('先写菜名哦');$('#fname').focus();return}
+  if(allDishes().some(d=>!d.deleted&&d.name===name)){toast('菜单里已经有「'+name+'」啦');return}
+  const ings=f.ings.filter(x=>x.name.trim()).map(x=>{const q=parseFloat(x.qty);return isNaN(q)||q<=0?{name:x.name.trim(),qty:null,unit:'适量'}:{name:x.name.trim(),qty:q,unit:(x.unit||'').trim()||'个'}});
+  const steps=f.steps.split('\n').map(s=>s.trim()).filter(Boolean);
+  const d={id:uid('c'),name,cat:f.cat,...(f.cat==='staple'?{sub:f.sub||'other'}:{}),emoji:f.emoji,mins:Math.max(1,parseInt(f.mins)||20),ings,steps,tip:'',preset:false,
+    source:'manual',sourceImage:null,createdBy:state.prefs.mode==='fam'?'m1':'kid',createdAt:Date.now()}; // sourceImage 预留给「图片识菜」保留原图
+  state.customDishes.push(d);save();ui.form=blankForm();render();toast(`⭐ ${d.emoji} ${name} 已加入菜单`);
+}
+
+/* ---------- 菜品详情 ---------- */
+function mpThumb(s,cls){const p=state.mealPhotos[s];return p?`<button class="${cls||'hthumb'}" data-act="viewmeal" data-d="${s}" title="看大图"><img src="${p.data}" alt="${md(s)} 整餐图"></button>`:''}
+function mpSize(){let n=0,b=0;Object.values(state.mealPhotos).forEach(p=>{n++;b+=p.data.length*0.75});return{n,kb:Math.round(b/1024)}}
+function mealPhotoBox(s,canEdit){const p=state.mealPhotos[s];
+  if(!p&&!canEdit)return'';
+  const inp=`<input type="file" accept="image/*" capture="environment" data-mealup="1" data-date="${s}">`;
+  return`<div class="mealph ${p?'has':''}">${p?mpThumb(s,'mimg'):''}
+   <div class="mt"><b>📸 整餐图${p?'':'（还没传）'}</b><span>${p?(canEdit?'整顿饭做好的样子，点图片看大图':'家人拍的整顿饭，点开看大图'):'饭菜都做好、装好盒后，拍一张整顿饭的照片'}</span></div>
+   ${canEdit?`<div class="row">${p?`<label class="btn sm upl">🔄 换一张${inp}</label><button class="btn sm ghost" data-act="delmeal" data-d="${s}" style="color:var(--red)">🗑 删除</button>`:`<label class="btn pri sm upl">📸 上传整餐图${inp}</label>`}</div>`:''}</div>`}
+async function onMealUpload(inp){
+  const f=inp.files&&inp.files[0];const s=inp.dataset.date;inp.value='';if(!f||!s)return;
+  try{const r=await compress(f,800,0.75,true);const old=state.mealPhotos[s];
+    if(old&&!confirm(`${label(s)} 已经有整餐图了，换成新拍的这张吗？`))return;
+    state.mealPhotos[s]={data:r.data,ts:Date.now(),by:'m1',w:r.w,h:r.h};
+    if(!save()){if(old)state.mealPhotos[s]=old;else delete state.mealPhotos[s];return}
+    render();const kb=Math.round(r.data.length*0.75/1024);const tot=new Blob([localStorage.getItem(KEY)||'']).size/1024/1024;
+    toast(`📸 整餐图已${old?'替换':'保存'}（约 ${kb}KB）`+(tot>3.5?`，已用 ${tot.toFixed(1)}MB，快满了，记得导出备份后删掉旧图`:''));
+  }catch(e){toast('⚠️ '+(e.message||'图片处理失败'))}
+}
+function photoHtml(list,del){return list.length?`<div class="photos">${list.map(p=>`<div class="ph"><img src="${p.data}" alt="成品图"><i>${md(p.date)}</i>${del?`<button data-act="delphoto" data-id="${p.id}" title="删除">✕</button>`:''}</div>`).join('')}</div>`:''}
+function recipeHtml(d){return`<div class="recipe"><div class="row">${catTag(d.cat)}${d.cat==='staple'?`<span class="muted">${SUBS[subOf(d)]}</span>`:''}<span class="muted">⏱ 约 ${d.mins} 分钟 · 一人份</span></div>
+  <h3>🧺 食材</h3><ul>${d.ings.map(x=>`<li>${esc(x.name)} <b>${x.qty!=null?fmtQ(x.qty)+esc(x.unit):'适量'}</b></li>`).join('')||'<li>未填写</li>'}</ul>
+  <h3>👩‍🍳 做法</h3>${d.steps.length?`<ol>${d.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:'<p class="muted">未填写</p>'}
+  ${d.tip?`<div class="tipbox">💡 ${esc(d.tip)}</div>`:''}</div>`}
+function showDetail(id,withAdd){
+  const d=dish(id);if(!d)return;const ph=state.photos.filter(p=>p.dishId===id).sort((a,b)=>b.ts-a.ts);
+  showModal(`<div class="mhead"><h2>${esc(d.name)}</h2><button class="close" data-act="close">✕</button></div>
+  <div class="recipe"><div class="hero">${d.emoji}</div></div>${recipeHtml(d)}
+  ${ph.length?`<h3>📸 做好的样子</h3>${photoHtml(ph)}`:''}
+  ${withAdd?`<button class="btn pri big" data-act="addto" data-id="${id}">🔁 再点一次：加到 ${label(ui.date)}</button>`:''}`);
+}
+
+/* ---------- 家人端：点单 ---------- */
+function famDays(){const t=today();if(ui.famRange==='today')return[isWeekday(t)?t:nextWorkday(t)];if(ui.famRange==='next')return[nextWorkday(t)];return weekDays(t)}
+function vOrders(){
+  const t=today();const days=famDays();
+  return`<div class="row" style="margin-top:16px"><div class="seg">
+    <button class="${ui.famRange==='today'?'on':''}" data-act="famrange" data-r="today">今天</button>
+    <button class="${ui.famRange==='next'?'on':''}" data-act="famrange" data-r="next">下个上学日</button>
+    <button class="${ui.famRange==='week'?'on':''}" data-act="famrange" data-r="week">本周</button></div>
+    ${!isWeekday(t)&&ui.famRange==='today'?'<span class="muted">今天周末不用送饭，显示下周一</span>':''}</div>
+  ${days.map(dayCard).join('')}`;
+}
+function dayCard(s){
+  const o=ord(s),lk=isLocked(s);const items=o?o.slots.filter(x=>x.dishId&&dish(x.dishId)):[];
+  const st=!items.length?(lk?'<span class="tag c-meat">没点餐</span>':'<span class="tag c-dish">还没点</span>'):o.status==='submitted'?`<span class="tag c-veg">${o.source==='carry'?'沿用上次':o.source==='random'?'随机配餐':o.source==='repeat'?'再点一次':'已提交'}</span>`:'<span class="tag c-staple">草稿·孩子还在选</span>';
+  const last=lastOrderBefore(s);
+  return`<div class="card day"><h3>📅 ${label(s)} ${items.length?mealTag(mealOf(o)):''} ${st}<span class="muted" style="font-weight:500">截止 ${state.settings.deadline}</span></h3>
+  ${items.length||state.mealPhotos[s]?mealPhotoBox(s,true):''}
+  ${items.length?items.map(x=>{const d=dish(x.dishId);const ph=state.photos.filter(p=>p.date===s&&p.dishId===d.id);
+    return`<details class="it"><summary><span class="e">${d.emoji}</span><span>${esc(d.name)} ${catTag(d.cat)}${ph.length?' 📸':''}</span><span class="arr">⏱${d.mins}分 ▾</span></summary>
+    ${recipeHtml(d)}
+    <h3>📸 这道菜的成品图</h3>${photoHtml(ph,true)}
+    <label class="btn blue sm upl" style="margin-top:8px">📷 拍照 / 上传成品图<input type="file" accept="image/*" capture="environment" data-up="1" data-date="${s}" data-dish="${d.id}"></label>
+    </details>`}).join(''):`<div class="empty" style="padding:14px"><div class="e">${eIco('🍽️')}</div>${lk?'到截止时间孩子没点餐':'孩子还没点'}
+      ${last?`<div style="margin-top:10px"><button class="btn pri" data-act="carry" data-d="${s}">🔁 沿用上次（${md(last)} ${MEALS[mealOf(state.orders[last])].emoji}：${state.orders[last].slots.filter(x=>x.dishId&&dish(x.dishId)).map(x=>dish(x.dishId).emoji).join('')}）</button></div>`:''}</div>`}
+  </div>`;
+}
+async function onUpload(inp){
+  const f=inp.files&&inp.files[0];if(!f)return;
+  try{const data=await compress(f);
+    state.photos.push({id:uid('p'),date:inp.dataset.date,dishId:inp.dataset.dish,data,ts:Date.now(),by:'m1'});
+    if(!save()){state.photos.pop();return}
+    const open=inp.closest('details');const idx=open?[...document.querySelectorAll('details.it')].indexOf(open):-1;
+    render();if(idx>=0){const ds=document.querySelectorAll('details.it');if(ds[idx])ds[idx].open=true}
+    toast('📸 成品图已保存（约 '+Math.round(data.length*0.75/1024)+'KB）');
+  }catch(e){toast('⚠️ '+(e.message||'图片处理失败'))}
+}
+function compress(file,maxW=600,q=0.72,meta=false){return new Promise((res,rej)=>{const url=URL.createObjectURL(file);const img=new Image();
+  img.onload=()=>{const w=Math.min(maxW,img.naturalWidth),h=Math.round(img.naturalHeight*w/img.naturalWidth);const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,w,h);g.drawImage(img,0,0,w,h);URL.revokeObjectURL(url);const d=c.toDataURL('image/jpeg',q);res(meta?{data:d,w,h}:d)};
+  img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('这张图片读不了，换一张试试（iPhone 可在设置-相机-格式里选「兼容性最佳」）'))};img.src=url})}
+
+/* ---------- 家人端：食材清单 ---------- */
+function shopDays(){const t=today();if(ui.shopRange==='today')return isWeekday(t)?[t]:[];if(ui.shopRange==='next')return[nextWorkday(t)];return weekDays(t)}
+function grp(i){if(i.qty==null)return'season';const n=i.name;if(/面条|挂面|饺子皮|馄饨皮|芝麻酱|黄豆酱/.test(n))return'other';if(/肉|排骨|鸡|鱼|虾|牛|蛋|翅|腩|里脊|火腿/.test(n))return'meat';if(/米|面粉|豆腐|豆皮|木耳|紫菜|花生|酵母|可乐|番茄酱|糖|甜面酱|八角/.test(n))return'other';return'veg'}
+function vShop(){
+  const days=shopDays();const scope=ui.shopRange==='week'?'week:'+weekStart(today()):'day:'+(days[0]||'');
+  const map={},season={};let dishCount=0;
+  days.forEach(s=>{const o=ord(s);if(!o)return;o.slots.forEach(x=>{const d=x.dishId&&dish(x.dishId);if(!d)return;dishCount++;
+    d.ings.forEach(i=>{if(i.qty==null){(season[i.name]=season[i.name]||new Set()).add(d.name);return}
+      const k=i.name+'|'+i.unit;if(!map[k])map[k]={key:k,name:i.name,unit:i.unit,qty:0,for:[],g:grp(i)};map[k].qty+=i.qty;map[k].for.push(d.name)})})});
+  const chk=state.shopping[scope]||{};
+  const G={meat:'🥩 肉蛋水产',veg:'🥬 蔬菜水果',other:'🛒 粮油干货及其他'};
+  const items=Object.values(map);
+  const li=(k,nm,q,forList)=>`<li class="${chk[k]?'done':''}"><input type="checkbox" data-chk="${esc(k)}" data-scope="${esc(scope)}" ${chk[k]?'checked':''}><div><div class="nm">${esc(nm)}</div><div class="for">${esc([...new Set(forList)].join('、'))}</div></div><span class="q">${q}</span></li>`;
+  const left=items.filter(i=>!chk[i.key]).length;
+  return`<div class="row" style="margin-top:16px"><div class="seg">
+    <button class="${ui.shopRange==='today'?'on':''}" data-act="shoprange" data-r="today">今天</button>
+    <button class="${ui.shopRange==='next'?'on':''}" data-act="shoprange" data-r="next">下个上学日</button>
+    <button class="${ui.shopRange==='week'?'on':''}" data-act="shoprange" data-r="week">本周</button></div>
+    ${items.length?`<button class="btn sm" data-act="copyshop">📋 复制清单</button>`:''}</div>
+  <p class="muted">${days.length?days.map(d=>md(d)+(hasDishes(ord(d))?MEALS[mealOf(ord(d))].emoji:'')).join('、'):'今天周末，不用送饭'} · 共 ${dishCount} 道菜 · 同名食材已自动合并${items.length?` · 还差 <b>${left}</b> 样没买`:''}</p>
+  ${items.length?Object.keys(G).map(g=>{const arr=items.filter(i=>i.g===g);return arr.length?`<div class="card shop"><h3 style="margin-top:0">${G[g]}</h3><ul>${arr.map(i=>li(i.key,i.name,fmtQ(i.qty)+i.unit,i.for)).join('')}</ul></div>`:''}).join('')
+   +(Object.keys(season).length?`<div class="card shop"><h3 style="margin-top:0">🧂 调料（家里常备，看看够不够）</h3><ul>${Object.keys(season).map(n=>li('调料|'+n,n,'适量',[...season[n]])).join('')}</ul></div>`:'')
+   :'<div class="empty card"><div class="e">'+eIco('🧺')+'</div>这段时间还没有点单</div>'}`;
+}
+function shopText(){const v=document.createElement('div');v.innerHTML=vShop();return[...v.querySelectorAll('.shop li')].map(l=>(l.classList.contains('done')?'☑ ':'☐ ')+l.querySelector('.nm').textContent+' '+l.querySelector('.q').textContent).join('\n')}
+
+/* ---------- 家人端：设置 ---------- */
+function vSettings(){
+  const size=new Blob([localStorage.getItem(KEY)||'']).size;
+  const ti=state.settings.themeImg;
+  return`<div class="card" style="margin-top:16px"><h2 style="margin-top:0">🎨 主题</h2>
+    ${themeCards()}
+    <p class="muted">选好后孩子端、家人端都会一起换；孩子也可以在孩子端右上角点「🎨 换主题」自己换。</p>
+    <h3 style="margin:16px 0 8px">🖼️ 自定义主题图片</h3>
+    <div class="row">${ti?`<img class="timg" src="${ti}" alt="主题图片">`:`<span class="timg" style="display:inline-flex;align-items:center;justify-content:center;font-size:30px">🙂</span>`}
+    <label class="btn pri sm upl">📷 上传一张喜欢的图片<input type="file" accept="image/*" data-themeimg="1"></label>
+    ${ti?'<button class="btn sm ghost" data-act="clrthemeimg">✕ 清除图片</button>':''}</div>
+    <p class="muted">可以上传孩子喜欢的图片（比如自己画的小猫、宠物照片、自己买的贴纸照片），会显示在页面左上角当头像。图片会压缩成 160×160 小图，只保存在这台设备里，不会上传。</p></div>
+  <div class="card"><h2 style="margin-top:0">⏰ 截止时间</h2>
+    <div class="row"><span>每天几点前要点好当天的午餐：</span><input class="in" type="time" id="dlt" value="${state.settings.deadline}" style="width:150px"><button class="btn pri sm" data-act="savedl">保存</button></div>
+    <p class="muted">孩子可以提前一天点，也可以当天这个时间前点；过了时间就锁定，没点的你可以在「点单」里一键沿用上次。</p></div>
+  <div class="card"><h2 style="margin-top:0">🍱 每种午餐默认有哪些格子</h2>
+    <div class="seg">${MEAL_IDS.map(k=>`<button class="${ui.tplType===k?'on':''}" data-act="tpltype" data-t="${k}">${MEALS[k].emoji} ${MEALS[k].name}</button>`).join('')}</div>
+    <div class="row" style="margin-top:10px">${tplOf(ui.tplType).map((t,i)=>`<span class="btn sm">${slotLabel(t.type)}${t.dishId&&dish(t.dishId)?'（默认'+dish(t.dishId).name+'）':''} <label style="font-weight:500;font-size:13px"><input type="checkbox" data-tplopt="${i}" ${t.opt?'checked':''}> 可选</label> <a data-act="rmtpl" data-i="${i}" style="cursor:pointer;color:#c55">✕</a></span>`).join('')}</div>
+    <div class="row" style="margin-top:10px"><select class="in" id="tpladd" style="width:auto">${Object.keys(SLOT).map(k=>`<option value="${k}">${SLOT[k].label}</option>`).join('')}</select><button class="btn sm" data-act="addtpl">＋ 加一格</button><button class="btn sm ghost" data-act="resettpl">恢复「${MEALS[ui.tplType].name}」默认</button></div>
+    <p class="muted">只影响以后新点的日子；已经点好的不变。「可选」格子孩子可以不选。</p></div>
+  <div class="card"><h2 style="margin-top:0">💾 数据备份</h2>
+    <p class="muted">所有数据只存在这台设备的浏览器里，不会上传到任何地方。换设备或清理浏览器前，记得先导出备份。当前占用约 ${(size/1024).toFixed(0)} KB，其中整餐图 ${mpSize().n} 张约 ${mpSize().kb} KB、单道菜成品图 ${state.photos.length} 张（浏览器上限一般约 5MB；单道菜图每张约 30–80KB，整餐图每张约 60–150KB）。</p>
+    <div class="row"><button class="btn blue" data-act="export">⬇️ 导出数据 JSON</button>
+    <label class="btn upl">⬆️ 导入数据 JSON<input type="file" accept="application/json,.json" data-import="1"></label>
+    <button class="btn ghost" data-act="wipe" style="color:var(--red)">🗑 清空全部数据</button></div></div>`;
+}
+function exportData(){const blob=new Blob([JSON.stringify({app:'lunch-order',exportedAt:new Date().toISOString(),data:state},null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`午餐点点备份-${today()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('⬇️ 已导出')}
+function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);const d=j.data||j;
+  if(!d||typeof d.orders!=='object'||!d.settings)throw new Error();
+  if(!confirm('导入会覆盖这台设备上现在的数据，确定吗？'))return;
+  state=normalize(Object.assign(defaultState(),d));save();render();toast('✅ 导入成功')}catch(e){toast('⚠️ 这不是有效的备份文件')}};r.readAsText(f)}
+
+const VIEWS={order:vOrder,history:vHistory,random:vRandom,add:vAdd,orders:vOrders,shop:vShop,settings:vSettings};
+
+/* ---------- 弹窗 ---------- */
+function showModal(h){$('#mbox').innerHTML=h;$('#modal').classList.add('show')}
+function closeModal(){$('#modal').classList.remove('show');ui.picker=null}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+
+/* ---------- 事件 ---------- */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,ds=el.dataset;
+  if(a!=='close'&&el.tagName!=='LABEL')e.preventDefault();
+  const m=state.prefs.mode==='fam'?'fam':'kid';
+  switch(a){
+  case'themepick':showModal(`<div class="mhead"><h2>🎨 选一个喜欢的主题</h2><button class="close" data-act="close">✕</button></div>${themeCards()}<p class="muted" style="margin-bottom:0">点一下就换好啦，下次打开还是这个主题。</p>`);break;
+  case'settheme':if(!THEMES[ds.theme])break;state.settings.theme=ds.theme;save();render();if($('#modal').classList.contains('show'))$('#mbox').querySelector('.themes').outerHTML=themeCards();toast(THEMES[ds.theme].emoji+' 换成「'+THEMES[ds.theme].name+'」啦');break;
+  case'clrthemeimg':state.settings.themeImg='';save();render();toast('已清除主题图片');break;
+  case'mode':state.prefs.mode=m==='kid'?'fam':'kid';save();window.scrollTo(0,0);render();break;
+  case'tab':if(ui.tab[m]==='add')readForm();ui.tab[m]=ds.tab;window.scrollTo(0,0);render();break;
+  case'goto':ui.tab.kid=ds.tab;render();break;
+  case'close':closeModal();break;
+  case'date':ui.date=ds.d;render();break;
+  case'pick':openPicker(+ds.i);break;
+  case'pcat':ui.picker.cat=ds.c;ui.picker.sub='all';renderPicker();break;
+  case'psub':ui.picker.sub=ds.s;renderPicker();break;
+  case'meal':setMeal(ui.date,ds.t);break;
+  case'choose':chooseDish(ds.id);break;
+  case'rmslot':{const o=ord(ui.date);if(o){o.slots.splice(+ds.i,1);o.updatedAt=Date.now();save();render()}break}
+  case'addslot':showModal(`<div class="mhead"><h2>再加一个什么？</h2><button class="close" data-act="close">✕</button></div><div class="dgrid">${['meat','veg','soup','fruit','staple'].map(c=>`<button class="dcard" data-act="addslottype" data-t="${c}"><div class="emo">${CATS[c].emoji}</div><div class="nm">${c==='staple'?'主食（饭/面/饺子…）':CATS[c].name}</div></button>`).join('')}</div>`);break;
+  case'addslottype':openPicker(-1,ds.t);break;
+  case'resetslots':if(confirm('清空这天已经选的菜？')){const mt=mealOf(ord(ui.date));state.orders[ui.date]=newOrder(ui.date,mt);save();render()}break;
+  case'repeatlast':{const l=lastOrderBefore(ui.date);if(!l){toast('还没有以前的点单');break}if(hasDishes(ord(ui.date))&&!confirm(`换成和 ${md(l)} 一样的菜？`))break;copyOrder(l,ui.date,'repeat');save();render();toast(`🔁 已复制 ${md(l)} 的菜`);break}
+  case'submit':{const o=ord(ui.date);if(!hasDishes(o)){toast('还一个菜都没选呢～');break}const miss=o.slots.filter(x=>!x.opt&&!x.dishId);if(miss.length&&!confirm(`还有「${miss.map(x=>slotLabel(x.type)).join('、')}」没选，就这样告诉家人吗？`))break;o.status='submitted';o.updatedAt=Date.now();save();render();
+    showModal(`<div style="text-align:center"><div class="okpic" style="font-size:80px">${curTheme()==='kitty'?SVG.cat:'🎉'}</div><h2>${curTheme()==='kitty'?SVG.heart.replace('<svg','<svg style="width:26px;height:26px;vertical-align:-4px"'):''}已经告诉家人啦！</h2><p>${label(ui.date)} 中午吃 ${MEALS[mealOf(o)].emoji}${MEALS[mealOf(o)].name}：</p><div style="font-size:20px;font-weight:700">${o.slots.filter(x=>x.dishId).map(x=>dish(x.dishId)).map(d=>d.emoji+' '+esc(d.name)).join('<br>')}</div><p class="muted">截止前还可以改哦</p><button class="btn pri big" data-act="close">好的</button></div>`);break}
+  case'detail':showDetail(ds.id,!!ds.add);break;
+  case'addto':if(addToDate(ds.id,ui.date)){closeModal();render()}break;
+  case'poolcat':ui.poolCat=ds.c;render();break;
+  case'viewmeal':{const p=state.mealPhotos[ds.d];if(!p)break;showModal(`<div class="mhead"><h2>📸 ${label(ds.d)} 的整餐</h2><button class="close" data-act="close">✕</button></div><div class="bigimg"><img src="${p.data}" alt="整餐大图"></div><p class="muted" style="text-align:center">${(()=>{const o=state.orders[ds.d];return o?o.slots.filter(x=>x.dishId&&dish(x.dishId)).map(x=>dish(x.dishId).emoji+' '+esc(dish(x.dishId).name)).join('　'):''})()}</p>`);break}
+  case'delmeal':if(state.mealPhotos[ds.d]&&confirm(`删除 ${label(ds.d)} 的整餐图？`)){delete state.mealPhotos[ds.d];save();render();toast('已删除整餐图')}break;
+  case'reorder':reorder(ds.d);break;
+  case'rday':{if(isLocked(ui.date)){toast('🔒 '+md(ui.date)+' 已截止，换个日子');break}ui.proposal={days:[genDay(ui.date,new Set(),ui.rndType||'rice')]};render();break}
+  case'rweek':{const w=new Set();const plan=weekMealPlan();ui.proposal={days:weekDays(ui.date).map((s,i)=>genDay(s,w,plan[i]))};render();break}
+  case'rndtype':ui.rndType=ds.t;render();break;
+  case'rdaytype':regenDay(+ds.d,ds.t);render();break;
+  case'rclear':{const x=ui.proposal.days[+ds.d].slots[+ds.i];x.dishId=null;x.fromPool=true;render();break}
+  case'reroll':{const d=ui.proposal.days[+ds.d];const x=d.slots[+ds.i];const day=new Set(d.slots.map(y=>y.dishId));const wk=new Set(ui.proposal.days.flatMap(dd=>dd.slots.map(y=>y.dishId)));const r=pickRandom(x.type,day,wk);Object.assign(x,r);render();break}
+  case'rerollday':regenDay(+ds.d);render();break;
+  case'useproposal':useProposal();break;
+  case'soon':toast(`🚧 「${ds.what}」下一版开放，先用手动添加吧`);break;
+  case'emo':readForm();ui.form.emoji=ds.e;render();break;
+  case'adding':readForm();ui.form.ings.push({name:'',qty:'',unit:'克'});render();break;
+  case'rming':readForm();ui.form.ings.splice(+ds.i,1);if(!ui.form.ings.length)ui.form.ings.push({name:'',qty:'',unit:'克'});render();break;
+  case'savedish':saveDish();break;
+  case'deldish':{const d=dish(ds.id);if(d&&confirm(`从菜单里删除「${d.name}」？以前的点单记录会保留。`)){d.deleted=true;save();render()}break}
+  case'famrange':ui.famRange=ds.r;render();break;
+  case'shoprange':ui.shopRange=ds.r;render();break;
+  case'carry':{const s=ds.d,l=lastOrderBefore(s);if(!l)break;copyOrder(l,s,'carry','m1');save();render();toast(`🔁 ${md(s)} 已沿用 ${md(l)} 的菜`);break}
+  case'delphoto':if(confirm('删除这张成品图？')){state.photos=state.photos.filter(p=>p.id!==ds.id);save();const op=[...document.querySelectorAll('details.it')].map(d=>d.open);render();document.querySelectorAll('details.it').forEach((d,i)=>{if(op[i])d.open=true})}break;
+  case'copyshop':{const t=shopText();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('📋 已复制，可以粘贴到微信'),()=>{showModal(`<div class="mhead"><h2>食材清单</h2><button class="close" data-act="close">✕</button></div><textarea class="in" style="min-height:300px">${esc(t)}</textarea>`)});break}
+  case'savedl':{const v=$('#dlt').value;if(!/^\d\d:\d\d$/.test(v)){toast('时间格式不对');break}state.settings.deadline=v;save();render();toast('⏰ 截止时间改成 '+v);break}
+  case'tpltype':ui.tplType=ds.t;render();break;
+  case'rmtpl':{const tp=tplOf(ui.tplType);if(tp.length<=1){toast('至少留一格');break}tp.splice(+ds.i,1);save();render();break}
+  case'addtpl':tplOf(ui.tplType).push({type:$('#tpladd').value});save();render();break;
+  case'resettpl':state.settings.mealTemplates[ui.tplType]=defaultTemplates()[ui.tplType];save();render();break;
+  case'export':exportData();break;
+  case'wipe':if(confirm('真的要清空全部数据吗？建议先导出备份。')&&confirm('再确认一次：清空后无法恢复。')){const mode=state.prefs.mode,th=state.settings.theme;state=defaultState();state.prefs.mode=mode;state.settings.theme=th;normalize(state);save();ui.date=defaultDate();render();toast('已清空')}break;
+  }
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.up){onUpload(t);return}
+  if(t.dataset.mealup){onMealUpload(t);return}
+  if(t.dataset.import){importData(t);t.value='';return}
+  if(t.dataset.themeimg){onThemeImg(t);return}
+  if(t.dataset.tplopt!=null){tplOf(ui.tplType)[+t.dataset.tplopt].opt=t.checked;save();return}
+  if(t.id==='rn'){ui.rndNoodle=+t.value;if(ui.rndNoodle+ui.rndOther>5)ui.rndOther=5-ui.rndNoodle;render();return}
+  if(t.id==='ro'){ui.rndOther=+t.value;if(ui.rndNoodle+ui.rndOther>5)ui.rndNoodle=5-ui.rndOther;render();return}
+  if(t.dataset.chk){const sc=t.dataset.scope;state.shopping[sc]=state.shopping[sc]||{};if(t.checked)state.shopping[sc][t.dataset.chk]=true;else delete state.shopping[sc][t.dataset.chk];save();render()}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+render();
+</script>
+</body>
+</html>
