@@ -242,11 +242,26 @@ html[data-theme=kitty] #modeBtn{border:2px solid #f3a6c1}
   .btn{font-size:16px;padding:10px 14px}
   .ingrow{grid-template-columns:1.6fr 1fr 1fr 40px}
 }
+/* 同步状态 */
+#syncBtn{background:rgba(255,255,255,.95);color:var(--ink);padding:7px 12px;border-radius:999px;font-weight:800;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.12);white-space:nowrap;display:inline-flex;align-items:center;gap:4px;border:2px solid transparent}
+#syncBtn.s-ok{border-color:#2fbf7f;color:#167a4d}
+#syncBtn.s-syncing{border-color:#4aa3ff;color:#1c5fa8}
+#syncBtn.s-syncing .si{display:inline-block;animation:spin 1.2s linear infinite}
+#syncBtn.s-offline{border-color:#a8a29e;color:#57534e}
+#syncBtn.s-error,#syncBtn.s-badpass,#syncBtn.s-locked{border-color:#ef4444;color:#a42828}
+#syncBtn.s-local{color:var(--sub)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sync-card .sync-info{background:var(--accent-soft);border-radius:14px;padding:10px 14px}
+.sync-card details.chpass{margin-top:12px}.sync-card details.chpass summary{cursor:pointer;font-weight:700}
+.phw{display:inline-flex;align-items:center;justify-content:center;background:#f3f0ec;color:#8a7f78;font-size:13px;border-radius:12px;min-width:72px;min-height:54px;width:100%;height:100%}
+@media(max-width:520px){#syncBtn{padding:6px 8px;font-size:12px;gap:2px}header .hin{gap:6px}}
+#modeBtn{white-space:nowrap}
+@media(max-width:520px){body[data-mode=kid] #syncBtn .st{display:none}body[data-mode=kid] #syncBtn{padding:6px 7px}}
 </style>
 </head>
 <body data-mode="kid">
 <header>
-  <div class="hin"><h1><span id="brand">🍱</span>午餐点点<svg class="hbow" viewBox="0 0 34 22" aria-hidden="true"><path d="M17 11 3 3c-3 2-3 14 0 16zM17 11l14-8c3 2 3 14 0 16z" fill="#e8364f"/><circle cx="17" cy="11" r="4" fill="#c4213a"/></svg><small>中午想吃啥，提前告诉家人</small></h1><button id="themeBtn" data-act="themepick" title="换主题">🎨 换主题</button><button id="modeBtn" data-act="mode">👨‍👩‍👧 家人端</button></div>
+  <div class="hin"><h1><span id="brand">🍱</span>午餐点点<svg class="hbow" viewBox="0 0 34 22" aria-hidden="true"><path d="M17 11 3 3c-3 2-3 14 0 16zM17 11l14-8c3 2 3 14 0 16z" fill="#e8364f"/><circle cx="17" cy="11" r="4" fill="#c4213a"/></svg><small>中午想吃啥，提前告诉家人</small></h1><button id="syncBtn" class="s-local" data-act="syncpanel" title="同步状态"><span class="si">📱</span><span class="st">仅本机</span></button><button id="themeBtn" data-act="themepick" title="换主题">🎨 换主题</button><button id="modeBtn" data-act="mode">👨‍👩‍👧 家人端</button></div>
   <nav id="nav"></nav>
 </header>
 <main class="wrap" id="view"></main>
@@ -371,10 +386,10 @@ function compressSquare(file,n){return new Promise((res,rej)=>{const url=URL.cre
   img.onload=()=>{const s=Math.min(img.naturalWidth,img.naturalHeight);const c=document.createElement('canvas');c.width=c.height=n;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,n,n);g.drawImage(img,(img.naturalWidth-s)/2,(img.naturalHeight-s)/2,s,s,0,0,n,n);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',0.8))};
   img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('这张图片读不了，换一张试试'))};img.src=url})}
 async function onThemeImg(inp){const f=inp.files[0];inp.value='';if(!f)return;try{const d=await compressSquare(f,160);const old=state.settings.themeImg;state.settings.themeImg=d;if(!save()){state.settings.themeImg=old;return}render();toast('🖼️ 主题图片已换好')}catch(e){toast('⚠️ '+e.message)}}
-function normalize(st){st.settings=Object.assign({deadline:'08:30'},st.settings||{});if(!st.settings.mealTemplates)st.settings.mealTemplates=defaultTemplates();MEAL_IDS.forEach(k=>{if(!Array.isArray(st.settings.mealTemplates[k]))st.settings.mealTemplates[k]=defaultTemplates()[k]});delete st.settings.slotTemplate;if(!THEMES[st.settings.theme])st.settings.theme='default';if(typeof st.settings.themeImg!=='string'||!/^data:image\//.test(st.settings.themeImg))st.settings.themeImg='';if(!Array.isArray(st.photos))st.photos=[];const mp={};if(st.mealPhotos&&typeof st.mealPhotos==='object'&&!Array.isArray(st.mealPhotos))Object.keys(st.mealPhotos).forEach(k=>{const v=st.mealPhotos[k];if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&v&&typeof v.data==='string'&&/^data:image\/(jpeg|png|webp);base64,/.test(v.data))mp[k]={data:v.data,ts:+v.ts||0,by:v.by||'m1',w:+v.w||0,h:+v.h||0}});st.mealPhotos=mp;st.prefs=st.prefs||{mode:'kid'};return st}
+function normalize(st){st.settings=Object.assign({deadline:'08:30'},st.settings||{});if(!st.settings.mealTemplates)st.settings.mealTemplates=defaultTemplates();MEAL_IDS.forEach(k=>{if(!Array.isArray(st.settings.mealTemplates[k]))st.settings.mealTemplates[k]=defaultTemplates()[k]});delete st.settings.slotTemplate;if(!THEMES[st.settings.theme])st.settings.theme='default';if(typeof st.settings.themeImg!=='string'||!/^data:image\//.test(st.settings.themeImg))st.settings.themeImg='';if(!Array.isArray(st.photos))st.photos=[];const mp={};if(st.mealPhotos&&typeof st.mealPhotos==='object'&&!Array.isArray(st.mealPhotos))Object.keys(st.mealPhotos).forEach(k=>{const v=st.mealPhotos[k];if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&v&&typeof v.data==='string'&&(v.data===''||/^data:image\/(jpeg|png|webp);base64,/.test(v.data)))mp[k]={data:v.data,ts:+v.ts||0,by:v.by||'m1',w:+v.w||0,h:+v.h||0}});st.mealPhotos=mp;st.prefs=st.prefs||{mode:'kid'};return st}
 normalize(state);
 try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch(e){toast('⚠️ 存储空间满了，请到家人端「设置」导出备份后删除一些成品图');return false}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){if(!(typeof leanSave==='function'&&leanSave())){toast('⚠️ 存储空间满了，请到家人端「设置」导出备份后删除一些成品图');return false}}if(typeof syncTrack==='function')syncTrack();return true}
 
 /* ========== 工具 ========== */
 const $=s=>document.querySelector(s);
@@ -648,7 +663,7 @@ function saveDish(){
 }
 
 /* ---------- 菜品详情 ---------- */
-function mpThumb(s,cls){const p=state.mealPhotos[s];return p?`<button class="${cls||'hthumb'}" data-act="viewmeal" data-d="${s}" title="看大图"><img src="${p.data}" alt="${md(s)} 整餐图"></button>`:''}
+function mpThumb(s,cls){const p=state.mealPhotos[s];return p?(p.data?`<button class="${cls||'hthumb'}" data-act="viewmeal" data-d="${s}" title="看大图"><img src="${p.data}" alt="${md(s)} 整餐图"></button>`:`<span class="${cls||'hthumb'}"><span class="phw">☁️ 加载中</span></span>`):''}
 function mpSize(){let n=0,b=0;Object.values(state.mealPhotos).forEach(p=>{n++;b+=p.data.length*0.75});return{n,kb:Math.round(b/1024)}}
 function mealPhotoBox(s,canEdit){const p=state.mealPhotos[s];
   if(!p&&!canEdit)return'';
@@ -666,7 +681,7 @@ async function onMealUpload(inp){
     toast(`📸 整餐图已${old?'替换':'保存'}（约 ${kb}KB）`+(tot>3.5?`，已用 ${tot.toFixed(1)}MB，快满了，记得导出备份后删掉旧图`:''));
   }catch(e){toast('⚠️ '+(e.message||'图片处理失败'))}
 }
-function photoHtml(list,del){return list.length?`<div class="photos">${list.map(p=>`<div class="ph"><img src="${p.data}" alt="成品图"><i>${md(p.date)}</i>${del?`<button data-act="delphoto" data-id="${p.id}" title="删除">✕</button>`:''}</div>`).join('')}</div>`:''}
+function photoHtml(list,del){return list.length?`<div class="photos">${list.map(p=>`<div class="ph">${p.data?`<img src="${p.data}" alt="成品图">`:'<span class="phw">☁️ 加载中</span>'}<i>${md(p.date)}</i>${del?`<button data-act="delphoto" data-id="${p.id}" title="删除">✕</button>`:''}</div>`).join('')}</div>`:''}
 function recipeHtml(d){return`<div class="recipe"><div class="row">${catTag(d.cat)}${d.cat==='staple'?`<span class="muted">${SUBS[subOf(d)]}</span>`:''}<span class="muted">⏱ 约 ${d.mins} 分钟 · 一人份</span></div>
   <h3>🧺 食材</h3><ul>${d.ings.map(x=>`<li>${esc(x.name)} <b>${x.qty!=null?fmtQ(x.qty)+esc(x.unit):'适量'}</b></li>`).join('')||'<li>未填写</li>'}</ul>
   <h3>👩‍🍳 做法</h3>${d.steps.length?`<ol>${d.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:'<p class="muted">未填写</p>'}
@@ -749,7 +764,7 @@ function shopText(){const v=document.createElement('div');v.innerHTML=vShop();re
 function vSettings(){
   const size=new Blob([localStorage.getItem(KEY)||'']).size;
   const ti=state.settings.themeImg;
-  return`<div class="card" style="margin-top:16px"><h2 style="margin-top:0">🎨 主题</h2>
+  return`<div style="margin-top:16px"></div>${syncCard()}<div class="card"><h2 style="margin-top:0">🎨 主题</h2>
     ${themeCards()}
     <p class="muted">选好后孩子端、家人端都会一起换；孩子也可以在孩子端右上角点「🎨 换主题」自己换。</p>
     <h3 style="margin:16px 0 8px">🖼️ 自定义主题图片</h3>
@@ -766,7 +781,7 @@ function vSettings(){
     <div class="row" style="margin-top:10px"><select class="in" id="tpladd" style="width:auto">${Object.keys(SLOT).map(k=>`<option value="${k}">${SLOT[k].label}</option>`).join('')}</select><button class="btn sm" data-act="addtpl">＋ 加一格</button><button class="btn sm ghost" data-act="resettpl">恢复「${MEALS[ui.tplType].name}」默认</button></div>
     <p class="muted">只影响以后新点的日子；已经点好的不变。「可选」格子孩子可以不选。</p></div>
   <div class="card"><h2 style="margin-top:0">💾 数据备份</h2>
-    <p class="muted">所有数据只存在这台设备的浏览器里，不会上传到任何地方。换设备或清理浏览器前，记得先导出备份。当前占用约 ${(size/1024).toFixed(0)} KB，其中整餐图 ${mpSize().n} 张约 ${mpSize().kb} KB、单道菜成品图 ${state.photos.length} 张（浏览器上限一般约 5MB；单道菜图每张约 30–80KB，整餐图每张约 60–150KB）。</p>
+    <p class="muted">${SM.pass?'已开启多设备同步：数据在这台设备和你自己的 Supabase 云端各存一份（主题和头像图片只在本机）。导出备份可以另外留一份存档。':'所有数据只存在这台设备的浏览器里，不会上传到任何地方。换设备或清理浏览器前，记得先导出备份。'}当前占用约 ${(size/1024).toFixed(0)} KB，其中整餐图 ${mpSize().n} 张约 ${mpSize().kb} KB、单道菜成品图 ${state.photos.length} 张（浏览器上限一般约 5MB；单道菜图每张约 30–80KB，整餐图每张约 60–150KB）。</p>
     <div class="row"><button class="btn blue" data-act="export">⬇️ 导出数据 JSON</button>
     <label class="btn upl">⬆️ 导入数据 JSON<input type="file" accept="application/json,.json" data-import="1"></label>
     <button class="btn ghost" data-act="wipe" style="color:var(--red)">🗑 清空全部数据</button></div></div>`;
@@ -775,8 +790,150 @@ function exportData(){const blob=new Blob([JSON.stringify({app:'lunch-order',exp
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`午餐点点备份-${today()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('⬇️ 已导出')}
 function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);const d=j.data||j;
   if(!d||typeof d.orders!=='object'||!d.settings)throw new Error();
-  if(!confirm('导入会覆盖这台设备上现在的数据，确定吗？'))return;
+  if(!confirm(SM.pass?'导入会覆盖现在的数据，已开启同步，其他设备也会一起变成导入的内容，确定吗？':'导入会覆盖这台设备上现在的数据，确定吗？'))return;
   state=normalize(Object.assign(defaultState(),d));save();render();toast('✅ 导入成功')}catch(e){toast('⚠️ 这不是有效的备份文件')}};r.readAsText(f)}
+
+/* ========== 多设备同步（Supabase，口令保护；没口令=只存本机） ========== */
+const SB={url:'https://sidoyrqzrgyhdekccgtb.supabase.co',key:'sb_publishable_AB-ldR_coFryCKlBl7GSkw_Oy7cHrm7'};
+const SKEY='lunchOrder.sync';
+const SY={st:'local',msg:'',busy:false,again:false,timer:null,poll:null};
+let SM=loadSM();
+function loadSM(){try{const m=JSON.parse(localStorage.getItem(SKEY)||'null');if(m&&m.pass)return Object.assign({rev:0,shadow:{},local:{},dirty:{},up:{},lastOk:0,bad:''},m)}catch(e){}return{pass:''}}
+function saveSM(){try{if(SM.pass)localStorage.setItem(SKEY,JSON.stringify(SM));else localStorage.removeItem(SKEY)}catch(e){}}
+// 稳定序列化（键排序），保证本机和云端算出的指纹一致
+function canon(v){if(v===null||typeof v!=='object')return JSON.stringify(v===undefined?null:v);if(Array.isArray(v))return'['+v.map(canon).join(',')+']';return'{'+Object.keys(v).filter(k=>v[k]!==undefined).sort().map(k=>JSON.stringify(k)+':'+canon(v[k])).join(',')+'}'}
+function fp(v){const s=canon(v);let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0).toString(36)+'.'+s.length}
+const blobOfPhoto=p=>'p:'+p.id, blobOfMeal=(d,p)=>'m:'+d+':'+(+p.ts||0);
+// 把 state 拆成一条条记录（照片只放信息，本体单独传）；主题、模式是每台设备自己的，不同步
+function recordsOf(st){const r={};
+  r.settings={deadline:st.settings.deadline,mealTemplates:st.settings.mealTemplates};
+  Object.keys(st.orders).forEach(d=>{if(/^\d{4}-\d{2}-\d{2}$/.test(d))r['order:'+d]=st.orders[d]});
+  st.customDishes.forEach(d=>{if(/^[A-Za-z0-9_-]{1,60}$/.test(d.id))r['dish:'+d.id]=d});
+  st.photos.forEach(p=>{if(!/^[A-Za-z0-9_-]{1,60}$/.test(p.id))return;const{data,...m}=p;m.blob=blobOfPhoto(p);r['photo:'+p.id]=m});
+  Object.keys(st.mealPhotos).forEach(d=>{const p=st.mealPhotos[d];r['meal:'+d]={ts:p.ts,by:p.by,w:p.w,h:p.h,blob:blobOfMeal(d,p)}});
+  Object.keys(st.shopping||{}).forEach(s=>{if(/^[A-Za-z0-9:_-]{1,60}$/.test(s))r['shop:'+s]=st.shopping[s]});
+  return r}
+function intrinsicT(k,v){if(!v)return 1;if(k.startsWith('order:'))return+v.updatedAt||1;if(k.startsWith('dish:'))return+v.createdAt||1;if(k.startsWith('photo:')||k.startsWith('meal:'))return+v.ts||1;return 1}
+// 每次 save() 后调用：找出改过/删掉的记录，标成待上传
+function syncTrack(){if(!SM.pass)return;const recs=recordsOf(state),now=Date.now();
+  Object.keys(recs).forEach(k=>{const h=fp(recs[k]);if(SM.local[k]!==h){SM.local[k]=h;const sh=SM.shadow[k];if(!sh||sh.d||sh.h!==h)SM.dirty[k]=now;else delete SM.dirty[k]}});
+  Object.keys(SM.local).forEach(k=>{if(recs[k])return;delete SM.local[k];const sh=SM.shadow[k];if(sh&&!sh.d)SM.dirty[k]=now;else delete SM.dirty[k]});
+  saveSM();syncSoon(1500)}
+async function rpc(fn,args){let r;
+  try{r=await fetch(SB.url+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify(args),cache:'no-store'})}catch(e){const er=new Error('offline');er.code='offline';throw er}
+  if(!r.ok){const er=new Error('http '+r.status);er.code=r.status===404?'not_setup':'http';throw er}
+  const j=await r.json();if(!j||j.ok!==true){const er=new Error((j&&j.err)||'bad');er.code=(j&&j.err)||'bad';throw er}return j}
+// 把一条云端记录写进 state；返回需要下载的照片 id
+function applyRow(row,need){const k=row.k,v=row.d?null:row.v;const c=x=>JSON.parse(JSON.stringify(x));
+  if(k==='settings'){if(v){if(typeof v.deadline==='string'&&/^\d\d:\d\d$/.test(v.deadline))state.settings.deadline=v.deadline;if(v.mealTemplates&&typeof v.mealTemplates==='object')state.settings.mealTemplates=c(v.mealTemplates);normalize(state)}}
+  else if(k.startsWith('order:')){const d=k.slice(6);if(v&&Array.isArray(v.slots))state.orders[d]=c(v);else delete state.orders[d]}
+  else if(k.startsWith('dish:')){const id=k.slice(5);const i=state.customDishes.findIndex(x=>x.id===id);if(v&&v.name){if(i>=0)state.customDishes[i]=c(v);else state.customDishes.push(c(v))}else if(i>=0)state.customDishes.splice(i,1)}
+  else if(k.startsWith('photo:')){const id=k.slice(6);const i=state.photos.findIndex(x=>x.id===id);
+    if(v){const{blob,...m}=c(v);m.id=id;const old=i>=0?state.photos[i]:null;m.data=old&&old.data?old.data:'';if(!m.data)need.add(blob||('p:'+id));if(i>=0)state.photos[i]=m;else state.photos.push(m)}else if(i>=0)state.photos.splice(i,1)}
+  else if(k.startsWith('meal:')){const d=k.slice(5);if(v){const old=state.mealPhotos[d];const same=old&&old.data&&+old.ts===+v.ts;state.mealPhotos[d]={data:same?old.data:'',ts:+v.ts||0,by:v.by||'m1',w:+v.w||0,h:+v.h||0};if(!same)need.add(v.blob||blobOfMeal(d,v))}else delete state.mealPhotos[d]}
+  else if(k.startsWith('shop:')){const s=k.slice(5);if(v&&typeof v==='object')state.shopping[s]=c(v);else delete state.shopping[s]}
+  if(row.v&&row.v.blob)SM.up[row.v.blob]=1;
+  const h=v?fp(recordsOf(state)[k]||v):null;SM.shadow[k]={h,t:+row.t||0,d:!v};if(v)SM.local[k]=h;else delete SM.local[k];delete SM.dirty[k]}
+function photoData(blob){if(blob.startsWith('p:')){const p=state.photos.find(x=>'p:'+x.id===blob);return p&&p.data}const m=blob.match(/^m:(\d{4}-\d{2}-\d{2}):(\d+)$/);if(m){const p=state.mealPhotos[m[1]];return p&&+p.ts===+m[2]&&p.data}return''}
+function missingBlobs(){const s=new Set();state.photos.forEach(p=>{if(!p.data)s.add(blobOfPhoto(p))});Object.keys(state.mealPhotos).forEach(d=>{const p=state.mealPhotos[d];if(!p.data)s.add(blobOfMeal(d,p))});return s}
+function putBlobData(id,data){if(id.startsWith('p:')){const p=state.photos.find(x=>'p:'+x.id===id);if(p)p.data=data;return}const m=id.match(/^m:(\d{4}-\d{2}-\d{2}):(\d+)$/);if(m){const p=state.mealPhotos[m[1]];if(p&&+p.ts===+m[2])p.data=data}}
+function setSync(st,msg){SY.st=st;SY.msg=msg||'';const b=$('#syncBtn');if(!b)return;
+  const L={local:['📱','仅本机'],syncing:['🔄','同步中'],ok:['☁️','已同步'],offline:['📴','离线'],error:['⚠️','同步出错'],badpass:['🔑','口令不对'],locked:['⛔','已锁定']}[st]||['📱','仅本机'];
+  b.className='s-'+st;b.innerHTML=`<span class="si">${L[0]}</span><span class="st">${L[1]}</span>`;b.title=SY.msg||L[1];
+  document.querySelectorAll('.sync-info').forEach(p=>p.innerHTML=syncInfoHtml())}
+function syncSoon(ms){if(!SM.pass)return;clearTimeout(SY.timer);SY.timer=setTimeout(syncNow,ms||0)}
+let changedRemote=false;
+async function syncNow(){
+  if(!SM.pass){setSync('local');return}
+  if(SM.bad){setSync(SM.bad);return}
+  if(SY.busy){SY.again=true;return}
+  if(navigator.onLine===false){setSync('offline','没有网络，改动先存在本机，联网后自动同步');return}
+  SY.busy=true;setSync('syncing');changedRemote=false;
+  try{
+    // 1) 拉云端比上次新的记录（多拉一点重叠，防止并发时漏掉）
+    const pl=await rpc('lo_pull',{p_pass:SM.pass,p_since:Math.max(0,(SM.rev||0)-20)});
+    const need=new Set();
+    pl.rows.forEach(row=>{const k=row.k;const sh=SM.shadow[k];
+      if(sh&&sh.t===+row.t&&sh.d===!!row.d&&!SM.dirty[k])return; // 已经有了
+      if(SM.dirty[k]&&SM.dirty[k]>+row.t)return; // 本机改得更晚，等下上传
+      applyRow(row,need);changedRemote=true});
+    SM.rev=Math.max(SM.rev||0,+pl.rev||0);
+    // 2) 上传本机改动（先传照片本体，再传记录）
+    const recs=recordsOf(state);const keys=Object.keys(SM.dirty);
+    for(let i=0;i<keys.length;i+=100){const batch=keys.slice(i,i+100);const rows=[];
+      for(const k of batch){const v=recs[k];const t=SM.dirty[k];
+        if(v&&v.blob&&!SM.up[v.blob]){const data=photoData(v.blob);if(data){await rpc('lo_put_blob',{p_pass:SM.pass,p_id:v.blob,p_data:data});SM.up[v.blob]=1}}
+        rows.push(v?{k,v,t,d:false,h:fp(v)}:{k,v:null,t,d:true,h:null})}
+      const res=await rpc('lo_push',{p_pass:SM.pass,p_rows:rows.map(({h,...x})=>x)});
+      const rej=new Set((res.rejected||[]).map(x=>x.k));
+      rows.forEach(x=>{if(rej.has(x.k))return;SM.shadow[x.k]={h:x.h,t:x.t,d:x.d};if(SM.dirty[x.k]===x.t)delete SM.dirty[x.k]});
+      (res.rejected||[]).forEach(row=>{applyRow(row,need);changedRemote=true});
+      SM.rev=Math.max(SM.rev||0,+res.rev||0)}
+    // 3) 下载缺的照片
+    missingBlobs().forEach(b=>need.add(b));const ids=[...need].filter(id=>!photoData(id));
+    for(let i=0;i<ids.length;i+=5){const g=await rpc('lo_get_blobs',{p_pass:SM.pass,p_ids:ids.slice(i,i+5)});Object.keys(g.blobs||{}).forEach(id=>{const d=g.blobs[id];if(typeof d==='string'&&/^data:image\/(jpeg|png|webp);base64,/.test(d)){putBlobData(id,d);SM.up[id]=1;changedRemote=true}})}
+    SM.lastOk=Date.now();saveSM();
+    if(changedRemote){persistLocal();softRender()}
+    setSync(Object.keys(SM.dirty).length?'syncing':'ok');
+    if(Object.keys(SM.dirty).length)syncSoon(3000);
+  }catch(e){
+    if(e.code==='bad_pass'){SM.bad='badpass';saveSM();setSync('badpass','家庭口令不对（可能在别的设备上改过），请到「设置 → 多设备同步」重新输入')}
+    else if(e.code==='locked'){setSync('locked','输错太多次，暂时锁定 15 分钟');}
+    else if(e.code==='offline'){setSync('offline','连不上云端，改动先存在本机，联网后自动同步')}
+    else if(e.code==='not_setup'){setSync('error','云端还没建好：请先在 Supabase 的 SQL Editor 运行 supabase-setup.sql')}
+    else setSync('error','同步出错：'+e.message);
+    saveSM();
+  }finally{SY.busy=false;if(SY.again){SY.again=false;syncSoon(500)}}
+}
+// 云端变化写回本机缓存（不触发「待上传」）
+function persistLocal(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){leanSave()}}
+// 本机空间满了：已经在云端的照片本体先不存本机，打开时再从云端取
+function leanSave(){if(!SM.pass)return false;try{const s=JSON.parse(JSON.stringify(state));
+  s.photos.forEach(p=>{if(SM.up['p:'+p.id])p.data=''});Object.keys(s.mealPhotos).forEach(d=>{const p=s.mealPhotos[d];if(SM.up[blobOfMeal(d,p)])p.data=''});
+  localStorage.setItem(KEY,JSON.stringify(s));return true}catch(e){return false}}
+function softRender(){const a=document.activeElement;
+  if(a&&$('#view').contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=='file'&&a.type!=='checkbox'){clearTimeout(softRender.t);softRender.t=setTimeout(softRender,2000);return}
+  if(ui.tab[state.prefs.mode==='fam'?'fam':'kid']==='add')readForm();
+  const op=[...document.querySelectorAll('details.it')].map(d=>d.open);const y=window.scrollY;
+  ui.date=ui.date||defaultDate();render();document.querySelectorAll('details.it').forEach((d,i)=>{if(op[i])d.open=true});window.scrollTo(0,y);
+  document.querySelectorAll('.sync-info').forEach(p=>p.innerHTML=syncInfoHtml())}
+async function syncConnect(pass){
+  pass=(pass||'').trim();if(!pass){toast('先输入家庭口令');return}
+  if(navigator.onLine===false){toast('📴 现在没有网络，联网后再连接');return}
+  setSync('syncing');
+  try{await rpc('lo_ping',{p_pass:pass})}catch(e){
+    const m={bad_pass:'🔑 口令不对，再检查一下',locked:'⛔ 输错太多次，15 分钟后再试',offline:'📴 连不上云端，检查一下网络',not_setup:'⚠️ 云端还没建好，请先运行 supabase-setup.sql'}[e.code]||('⚠️ 连接失败：'+e.message);
+    toast(m);setSync(SM.pass?(SM.bad||'ok'):'local');refreshSyncUI();return}
+  // 第一次连接：本机已有的数据按各自的时间参与合并（云端已有的同一条，谁新用谁）
+  if(SM.pass&&SM.bad){SM.pass=pass;SM.bad=''} // 口令在别处改过：保留同步进度，只换口令
+  else{SM={pass,rev:0,shadow:{},local:{},dirty:{},up:{},lastOk:0,bad:''};
+  const recs=recordsOf(state);Object.keys(recs).forEach(k=>{SM.local[k]=fp(recs[k]);SM.dirty[k]=intrinsicT(k,recs[k])})}
+  saveSM();toast('✅ 口令正确，开始同步');startPolling();await syncNow();refreshSyncUI();
+}
+function syncForget(){if(!confirm('在这台设备上忘记家庭口令？\n本机数据会保留，但以后不再和其他设备同步。'))return;
+  SM={pass:''};saveSM();stopPolling();setSync('local');refreshSyncUI();toast('已忘记口令，这台设备改为「仅本机」')}
+async function syncChangePass(card){const o=card.querySelector('[data-sp=old]').value,n=card.querySelector('[data-sp=new]').value.trim();
+  if(n.length<8){toast('新口令至少 8 位');return}
+  try{await rpc('lo_change_pass',{p_pass:o,p_new:n});SM.pass=n;SM.bad='';saveSM();toast('🔑 口令已修改，其他设备需要重新输入新口令');refreshSyncUI();syncSoon(0)}
+  catch(e){toast({bad_pass:'🔑 旧口令不对',locked:'⛔ 输错太多次，15 分钟后再试',offline:'📴 没有网络',weak:'新口令太短'}[e.code]||'⚠️ 修改失败：'+e.message)}}
+function fmtAgo(t){if(!t)return'还没有';const s=Math.round((Date.now()-t)/1000);if(s<60)return'刚刚';if(s<3600)return Math.floor(s/60)+' 分钟前';const d=new Date(t);return`${d.getMonth()+1}月${d.getDate()}日 ${pad(d.getHours())}:${pad(d.getMinutes())}`}
+function syncInfoHtml(){if(!SM.pass)return'<span class="muted">现在是「仅本机」模式：数据只在这台设备上。</span>';
+  const n=Object.keys(SM.dirty).length;const L={ok:'☁️ 已同步',syncing:'🔄 同步中',offline:'📴 离线',error:'⚠️ 同步出错',badpass:'🔑 口令不对',locked:'⛔ 已锁定'}[SY.st]||'☁️ 已连接';
+  return`<b>${L}</b> · 上次成功同步：${fmtAgo(SM.lastOk)}${n?` · 还有 ${n} 条改动等上传`:''}${SY.msg?`<br><span class="muted">${esc(SY.msg)}</span>`:''}`}
+function syncCard(){const on=!!SM.pass;
+  return`<div class="card sync-card"><h2 style="margin-top:0">☁️ 多设备同步</h2>
+  <p class="sync-info">${syncInfoHtml()}</p>
+  ${on&&!SM.bad?`<div class="row"><button class="btn pri sm" data-act="syncnow">🔄 立即同步</button><button class="btn sm ghost" data-act="syncforget">🚪 在这台设备上忘记口令</button></div>
+   <details class="chpass"><summary>🔑 修改家庭口令</summary><div class="row" style="margin-top:8px"><input class="in" data-sp="old" type="password" placeholder="现在的口令" autocomplete="current-password" style="max-width:200px"><input class="in" data-sp="new" type="password" placeholder="新口令（至少 8 位）" autocomplete="new-password" style="max-width:200px"><button class="btn sm" data-act="syncchpass">确认修改</button></div><p class="muted">改完后，其他设备会显示「口令不对」，在那边重新输入新口令就行。</p></details>`
+  :`<div class="row"><input class="in sync-pass" type="password" placeholder="输入家庭口令" autocomplete="current-password" style="max-width:260px"><button class="btn pri" data-act="syncconnect">🔗 ${SM.bad?'重新连接':'连接同步'}</button>${SM.bad?'<button class="btn sm ghost" data-act="syncforget">忘记口令</button>':''}</div>`}
+  <p class="muted">输入同一个家庭口令的设备（孩子的平板、家人的手机）会自动同步点单、自己加的菜、成品图、整餐图、截止时间和食材勾选；主题和头像图片每台设备各自保留。数据存在你自己的 Supabase 里，没有口令的人读不到。口令只保存在本机浏览器里；不用这台设备时可以点「忘记口令」。不联网也能照常用，联网后自动补同步。</p></div>`}
+function refreshSyncUI(){document.querySelectorAll('.sync-card').forEach(c=>c.outerHTML=syncCard())}
+function startPolling(){stopPolling();SY.poll=setInterval(()=>{if(SM.pass&&!SM.bad&&document.visibilityState!=='hidden')syncNow()},25000)}
+function stopPolling(){if(SY.poll)clearInterval(SY.poll);SY.poll=null}
+window.addEventListener('focus',()=>syncSoon(0));
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncSoon(0)});
+window.addEventListener('online',()=>syncSoon(0));
+window.addEventListener('offline',()=>{if(SM.pass)setSync('offline','没有网络，改动先存在本机，联网后自动同步')});
 
 const VIEWS={order:vOrder,history:vHistory,random:vRandom,add:vAdd,orders:vOrders,shop:vShop,settings:vSettings};
 
@@ -791,6 +948,11 @@ document.addEventListener('click',e=>{
   if(a!=='close'&&el.tagName!=='LABEL')e.preventDefault();
   const m=state.prefs.mode==='fam'?'fam':'kid';
   switch(a){
+  case'syncpanel':showModal(`<div class="mhead"><h2>☁️ 同步</h2><button class="close" data-act="close">✕</button></div>${syncCard()}`);break;
+  case'syncconnect':syncConnect(el.closest('.sync-card').querySelector('.sync-pass').value);break;
+  case'syncnow':SM.bad='';syncNow().then(refreshSyncUI);break;
+  case'syncforget':syncForget();break;
+  case'syncchpass':syncChangePass(el.closest('.sync-card'));break;
   case'themepick':showModal(`<div class="mhead"><h2>🎨 选一个喜欢的主题</h2><button class="close" data-act="close">✕</button></div>${themeCards()}<p class="muted" style="margin-bottom:0">点一下就换好啦，下次打开还是这个主题。</p>`);break;
   case'settheme':if(!THEMES[ds.theme])break;state.settings.theme=ds.theme;save();render();if($('#modal').classList.contains('show'))$('#mbox').querySelector('.themes').outerHTML=themeCards();toast(THEMES[ds.theme].emoji+' 换成「'+THEMES[ds.theme].name+'」啦');break;
   case'clrthemeimg':state.settings.themeImg='';save();render();toast('已清除主题图片');break;
@@ -814,7 +976,7 @@ document.addEventListener('click',e=>{
   case'detail':showDetail(ds.id,!!ds.add);break;
   case'addto':if(addToDate(ds.id,ui.date)){closeModal();render()}break;
   case'poolcat':ui.poolCat=ds.c;render();break;
-  case'viewmeal':{const p=state.mealPhotos[ds.d];if(!p)break;showModal(`<div class="mhead"><h2>📸 ${label(ds.d)} 的整餐</h2><button class="close" data-act="close">✕</button></div><div class="bigimg"><img src="${p.data}" alt="整餐大图"></div><p class="muted" style="text-align:center">${(()=>{const o=state.orders[ds.d];return o?o.slots.filter(x=>x.dishId&&dish(x.dishId)).map(x=>dish(x.dishId).emoji+' '+esc(dish(x.dishId).name)).join('　'):''})()}</p>`);break}
+  case'viewmeal':{const p=state.mealPhotos[ds.d];if(!p||!p.data)break;showModal(`<div class="mhead"><h2>📸 ${label(ds.d)} 的整餐</h2><button class="close" data-act="close">✕</button></div><div class="bigimg"><img src="${p.data}" alt="整餐大图"></div><p class="muted" style="text-align:center">${(()=>{const o=state.orders[ds.d];return o?o.slots.filter(x=>x.dishId&&dish(x.dishId)).map(x=>dish(x.dishId).emoji+' '+esc(dish(x.dishId).name)).join('　'):''})()}</p>`);break}
   case'delmeal':if(state.mealPhotos[ds.d]&&confirm(`删除 ${label(ds.d)} 的整餐图？`)){delete state.mealPhotos[ds.d];save();render();toast('已删除整餐图')}break;
   case'reorder':reorder(ds.d);break;
   case'rday':{if(isLocked(ui.date)){toast('🔒 '+md(ui.date)+' 已截止，换个日子');break}ui.proposal={days:[genDay(ui.date,new Set(),ui.rndType||'rice')]};render();break}
@@ -842,7 +1004,7 @@ document.addEventListener('click',e=>{
   case'addtpl':tplOf(ui.tplType).push({type:$('#tpladd').value});save();render();break;
   case'resettpl':state.settings.mealTemplates[ui.tplType]=defaultTemplates()[ui.tplType];save();render();break;
   case'export':exportData();break;
-  case'wipe':if(confirm('真的要清空全部数据吗？建议先导出备份。')&&confirm('再确认一次：清空后无法恢复。')){const mode=state.prefs.mode,th=state.settings.theme;state=defaultState();state.prefs.mode=mode;state.settings.theme=th;normalize(state);save();ui.date=defaultDate();render();toast('已清空')}break;
+  case'wipe':if(SM.pass?confirm('清空这台设备上的数据，并让这台设备退出同步？\n云端和其他设备上的数据不会被删除。'):(confirm('真的要清空全部数据吗？建议先导出备份。')&&confirm('再确认一次：清空后无法恢复。'))){if(SM.pass){SM={pass:''};saveSM();stopPolling();setSync('local')}const mode=state.prefs.mode,th=state.settings.theme;state=defaultState();state.prefs.mode=mode;state.settings.theme=th;normalize(state);save();ui.date=defaultDate();render();toast('已清空')}break;
   }
 });
 document.addEventListener('change',e=>{
@@ -856,8 +1018,9 @@ document.addEventListener('change',e=>{
   if(t.id==='ro'){ui.rndOther=+t.value;if(ui.rndNoodle+ui.rndOther>5)ui.rndNoodle=5-ui.rndOther;render();return}
   if(t.dataset.chk){const sc=t.dataset.scope;state.shopping[sc]=state.shopping[sc]||{};if(t.checked)state.shopping[sc][t.dataset.chk]=true;else delete state.shopping[sc][t.dataset.chk];save();render()}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('sync-pass'))syncConnect(e.target.value)});
 render();
+setSync(SM.pass?(SM.bad||'syncing'):'local');if(SM.pass&&!SM.bad){startPolling();syncNow()}
 </script>
 </body>
 </html>
